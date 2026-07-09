@@ -1,0 +1,13 @@
+{
+  "name": "In the Steps of the Master",
+  "short_name": "Jerusalem Tour",
+  "description": "Study & journal companion for the BYU Jerusalem Alumni Tour, August 2026",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f3ede2",
+  "theme_color": "#f3ede2",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
