@@ -1,5 +1,5 @@
 import { useState, useRef, useMemo, useEffect, useLayoutEffect } from "react";
-import { Document, Packer, Paragraph, TextRun, ImageRun, AlignmentType, BorderStyle, Table, TableRow, TableCell, TableAnchorType, RelativeHorizontalPosition, OverlapType, WidthType } from "docx";
+import { Document, Packer, Paragraph, TextRun, ImageRun, AlignmentType, BorderStyle, Table, TableRow, TableCell, WidthType, VerticalAlign } from "docx";
 import {
   Mountain, Waves, Church, Landmark, Footprints, MapPin, Home as HomeIcon,
   Star, ChevronLeft, ChevronUp, ChevronDown, Camera, ScanLine, Users, HelpCircle, Lock, Unlock,
@@ -12,7 +12,7 @@ const C = {
   line: "#ddd2bf", brass: "#b0894a", brassDk: "#8f6e37", olive: "#6b7350",
   teal: "#2c5f61", clay: "#a9612f",
 };
-const APP_VERSION = "1.0.0";
+const APP_VERSION = "1.1.0";
 const F_DISP = "'Cinzel', 'Trajan Pro', Georgia, serif";
 const F_SERIF = "'Frank Ruhl Libre', 'Frank Ruehl', Georgia, serif";
 function Fonts(){return(<style>{`@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@400;500;700&display=swap');`}</style>);}
@@ -956,53 +956,19 @@ function ExportModal({meta,isJer,trip,patch,getSite,onClose}){
   const NOB={style:BorderStyle.NONE,size:0,color:"FFFFFF"};
   const NO_BORDERS={top:NOB,bottom:NOB,left:NOB,right:NOB,insideHorizontal:NOB,insideVertical:NOB};
   function photoCap(p){ const names=p.people.map(memberName).filter(Boolean).join(", "); return [p.caption, names&&`(${names})`].filter(Boolean).join(" "); }
-  function photoDims(p, wPx){ const ratio=(p.w&&p.h)?(p.h/p.w):(p.portrait?1.4:0.7); return { wPx, hPx:Math.round(wPx*ratio) }; }
-  // floated figure (image + caption) that body text wraps around, newspaper-style
-  function figure(p, side){
-    const b64=(p.dataUrl||"").split(",")[1]; if(!b64) return null;
-    const { wPx, hPx }=photoDims(p, p.portrait?200:290);
-    const cap=photoCap(p);
-    const cell=new TableCell({ borders:NO_BORDERS, margins:{top:0,bottom:0,left:30,right:30}, children:[
-      new Paragraph({ spacing:{after:0}, children:[ new ImageRun({ type:"jpg", data:b64ToBytes(b64), transformation:{ width:wPx, height:hPx } }) ] }),
-      ...(cap?[new Paragraph({ spacing:{before:20,after:0}, children:[ new TextRun({ text:cap, italics:true, size:16, color:SLATE, font:"Georgia" }) ] })]:[]),
-    ]});
-    return new Table({
-      float:{ horizontalAnchor:TableAnchorType.TEXT, verticalAnchor:TableAnchorType.TEXT,
-        relativeHorizontalPosition: side==="left"?RelativeHorizontalPosition.LEFT:RelativeHorizontalPosition.RIGHT,
-        overlap:OverlapType.NEVER, leftFromText: side==="left"?0:200, rightFromText: side==="left"?200:0, topFromText:40, bottomFromText:120 },
-      width:{ size:wPx*15, type:WidthType.DXA }, borders:NO_BORDERS,
-      rows:[ new TableRow({ children:[cell] }) ],
-    });
-  }
-  // centered inline figure for the grouped gallery after the text
-  function inlineFigure(p){
-    const b64=(p.dataUrl||"").split(",")[1]; if(!b64) return [];
-    const { wPx, hPx }=photoDims(p, p.portrait?250:360);
-    const cap=photoCap(p); const out=[
-      new Paragraph({ alignment:AlignmentType.CENTER, spacing:{before:80,after:20}, children:[ new ImageRun({ type:"jpg", data:b64ToBytes(b64), transformation:{ width:wPx, height:hPx } }) ] }),
-    ];
-    if(cap) out.push(new Paragraph({ alignment:AlignmentType.CENTER, spacing:{after:140}, children:[ new TextRun({ text:cap, italics:true, size:18, color:SLATE, font:"Georgia" }) ] }));
-    return out;
-  }
-  // one journal entry -> floated figures + wrapped text + grouped gallery
+  function dims(p,wPx){ const ratio=(p.w&&p.h)?(p.h/p.w):(p.portrait?1.4:0.7); return { wPx, hPx:Math.round(wPx*ratio) }; }
+  function imgPara(p,wPx){ const {hPx}=dims(p,wPx); return new Paragraph({ alignment:AlignmentType.CENTER, spacing:{after:0}, children:[ new ImageRun({ type:"jpg", data:b64ToBytes((p.dataUrl||"").split(",")[1]), transformation:{ width:wPx, height:hPx } }) ] }); }
+  function capPara(cap){ return new Paragraph({ alignment:AlignmentType.CENTER, spacing:{before:20,after:0}, children:[ new TextRun({ text:cap, italics:true, size:17, color:SLATE, font:"Georgia" }) ] }); }
+  // single photo, centered
+  function singleFigure(p){ const {wPx,hPx}=dims(p, p.portrait?250:380); const cap=photoCap(p); const out=[ new Paragraph({ alignment:AlignmentType.CENTER, spacing:{before:120,after:0}, children:[ new ImageRun({ type:"jpg", data:b64ToBytes((p.dataUrl||"").split(",")[1]), transformation:{width:wPx,height:hPx} }) ] }) ]; if(cap) out.push(capPara(cap)); out.push(new Paragraph({spacing:{after:160},children:[]})); return out; }
+  // 2-up grid gallery, captions under each within column width
+  function gridCell(p){ const cap=p?photoCap(p):""; const kids=[]; if(p){ kids.push(imgPara(p,235)); if(cap) kids.push(capPara(cap)); } else { kids.push(new Paragraph({children:[]})); } return new TableCell({ borders:NO_BORDERS, verticalAlign:VerticalAlign.TOP, margins:{top:60,bottom:160,left:60,right:60}, width:{size:50,type:WidthType.PERCENTAGE}, children:kids }); }
+  function galleryTable(photos){ const rows=[]; for(let i=0;i<photos.length;i+=2){ rows.push(new TableRow({ children:[ gridCell(photos[i]), gridCell(photos[i+1]||null) ] })); } return new Table({ alignment:AlignmentType.CENTER, width:{size:100,type:WidthType.PERCENTAGE}, borders:NO_BORDERS, rows }); }
   function entryChildren(text, photos){
-    const ph=photos||[]; const tlen=(text||"").trim().length;
-    // enough text to wrap? allow ~1 float per 320 chars, capped at 2
-    let floatN=0; if(ph.length){ if(tlen>=180) floatN=Math.min(ph.length,2,Math.max(1,Math.floor(tlen/320))); }
-    const floated=ph.slice(0,floatN), grouped=ph.slice(floatN);
-    const out=[];
-    floated.forEach((p,i)=>{ const f=figure(p, i%2===0?"left":"right"); if(f) out.push(f); });
-    if(text&&text.trim()) out.push(...notesParas(text)); else out.push(new Paragraph({children:[new TextRun({text:""})]}));
-    grouped.forEach((p)=>{ out.push(...inlineFigure(p)); });
-    return out;
-  }
-  function dayHeading(t){ return new Paragraph({ spacing:{before:280,after:60}, border:{ bottom:{ color:"b0894a", space:4, size:12, style:BorderStyle.SINGLE } }, children:[ new TextRun({ text:t, bold:true, size:30, color:INK, font:"Georgia" }) ] }); }
-  function siteHeading(t,locked){ return new Paragraph({ spacing:{before:200,after:20}, children:[ new TextRun({ text:t+(locked?"  \uD83D\uDD12":""), bold:true, size:26, color:BRASS, font:"Georgia" }) ] }); }
-  function blurbPara(t){ return new Paragraph({ spacing:{after:80}, children:[ new TextRun({ text:t, italics:true, size:20, color:OLIVE, font:"Georgia" }) ] }); }
-  function impBlock(e){
-    const out=[ new Paragraph({ spacing:{before:200,after:0}, children:[ new TextRun({ text:(e.title||"Untitled entry")+(e.locked?"  \uD83D\uDD12":""), bold:true, size:26, color:BRASS, font:"Georgia" }), new TextRun({ text:"  \u2014 impromptu", size:18, color:OLIVE, font:"Georgia" }) ] }) ];
-    if(e.date) out.push(new Paragraph({ spacing:{after:80}, children:[ new TextRun({ text:e.date, italics:true, size:20, color:OLIVE, font:"Georgia" }) ] }));
-    out.push(...entryChildren(e.text, e.photos));
+    const ph=photos||[]; const out=[];
+    if(text&&text.trim()) out.push(...notesParas(text)); else if(!ph.length) out.push(new Paragraph({children:[new TextRun({text:""})]}));
+    if(ph.length===1) out.push(...singleFigure(ph[0]));
+    else if(ph.length>1){ out.push(new Paragraph({spacing:{before:80},children:[]})); out.push(galleryTable(ph)); out.push(new Paragraph({spacing:{after:80},children:[]})); }
     return out;
   }
 
