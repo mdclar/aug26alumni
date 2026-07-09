@@ -12,7 +12,7 @@ const C = {
   line: "#ddd2bf", brass: "#b0894a", brassDk: "#8f6e37", olive: "#6b7350",
   teal: "#2c5f61", clay: "#a9612f",
 };
-const APP_VERSION = "1.1.0";
+const APP_VERSION = "1.1.1";
 const F_DISP = "'Cinzel', 'Trajan Pro', Georgia, serif";
 const F_SERIF = "'Frank Ruhl Libre', 'Frank Ruehl', Georgia, serif";
 function Fonts(){return(<style>{`@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@400;500;700&display=swap');`}</style>);}
@@ -955,17 +955,18 @@ function ExportModal({meta,isJer,trip,patch,getSite,onClose}){
   function notesParas(text){ return (text||"").split("\n").map((line)=> new Paragraph({ spacing:{after:120}, children:[ new TextRun({ text:line, size:23, color:INK, font:"Georgia" }) ] })); }
   const NOB={style:BorderStyle.NONE,size:0,color:"FFFFFF"};
   const NO_BORDERS={top:NOB,bottom:NOB,left:NOB,right:NOB,insideHorizontal:NOB,insideVertical:NOB};
-  function photoCap(p){ const names=p.people.map(memberName).filter(Boolean).join(", "); return [p.caption, names&&`(${names})`].filter(Boolean).join(" "); }
+  function photoB64(p){ const s=(p&&p.dataUrl)||""; const i=s.indexOf(","); const b=i>=0?s.slice(i+1):""; return b.length>32?b:null; }
+  function photoCap(p){ const names=(p.people||[]).map(memberName).filter(Boolean).join(", "); return [p.caption, names&&`(${names})`].filter(Boolean).join(" "); }
   function dims(p,wPx){ const ratio=(p.w&&p.h)?(p.h/p.w):(p.portrait?1.4:0.7); return { wPx, hPx:Math.round(wPx*ratio) }; }
-  function imgPara(p,wPx){ const {hPx}=dims(p,wPx); return new Paragraph({ alignment:AlignmentType.CENTER, spacing:{after:0}, children:[ new ImageRun({ type:"jpg", data:b64ToBytes((p.dataUrl||"").split(",")[1]), transformation:{ width:wPx, height:hPx } }) ] }); }
+  function imgPara(p,wPx){ const b64=photoB64(p); if(!b64) return new Paragraph({children:[]}); const {hPx}=dims(p,wPx); return new Paragraph({ alignment:AlignmentType.CENTER, spacing:{after:0}, children:[ new ImageRun({ type:"jpg", data:b64ToBytes(b64), transformation:{ width:wPx, height:hPx } }) ] }); }
   function capPara(cap){ return new Paragraph({ alignment:AlignmentType.CENTER, spacing:{before:20,after:0}, children:[ new TextRun({ text:cap, italics:true, size:17, color:SLATE, font:"Georgia" }) ] }); }
   // single photo, centered
-  function singleFigure(p){ const {wPx,hPx}=dims(p, p.portrait?250:380); const cap=photoCap(p); const out=[ new Paragraph({ alignment:AlignmentType.CENTER, spacing:{before:120,after:0}, children:[ new ImageRun({ type:"jpg", data:b64ToBytes((p.dataUrl||"").split(",")[1]), transformation:{width:wPx,height:hPx} }) ] }) ]; if(cap) out.push(capPara(cap)); out.push(new Paragraph({spacing:{after:160},children:[]})); return out; }
+  function singleFigure(p){ const b64=photoB64(p); if(!b64) return []; const {wPx,hPx}=dims(p, p.portrait?250:380); const cap=photoCap(p); const out=[ new Paragraph({ alignment:AlignmentType.CENTER, spacing:{before:120,after:0}, children:[ new ImageRun({ type:"jpg", data:b64ToBytes(b64), transformation:{width:wPx,height:hPx} }) ] }) ]; if(cap) out.push(capPara(cap)); out.push(new Paragraph({spacing:{after:160},children:[]})); return out; }
   // 2-up grid gallery, captions under each within column width
-  function gridCell(p){ const cap=p?photoCap(p):""; const kids=[]; if(p){ kids.push(imgPara(p,235)); if(cap) kids.push(capPara(cap)); } else { kids.push(new Paragraph({children:[]})); } return new TableCell({ borders:NO_BORDERS, verticalAlign:VerticalAlign.TOP, margins:{top:60,bottom:160,left:60,right:60}, width:{size:50,type:WidthType.PERCENTAGE}, children:kids }); }
+  function gridCell(p){ const ok=p&&photoB64(p); const cap=ok?photoCap(p):""; const kids=[]; if(ok){ kids.push(imgPara(p,235)); if(cap) kids.push(capPara(cap)); } else { kids.push(new Paragraph({children:[]})); } return new TableCell({ borders:NO_BORDERS, verticalAlign:VerticalAlign.TOP, margins:{top:60,bottom:160,left:60,right:60}, width:{size:50,type:WidthType.PERCENTAGE}, children:kids }); }
   function galleryTable(photos){ const rows=[]; for(let i=0;i<photos.length;i+=2){ rows.push(new TableRow({ children:[ gridCell(photos[i]), gridCell(photos[i+1]||null) ] })); } return new Table({ alignment:AlignmentType.CENTER, width:{size:100,type:WidthType.PERCENTAGE}, borders:NO_BORDERS, rows }); }
   function entryChildren(text, photos){
-    const ph=photos||[]; const out=[];
+    const ph=(photos||[]).filter((p)=>photoB64(p)); const out=[];
     if(text&&text.trim()) out.push(...notesParas(text)); else if(!ph.length) out.push(new Paragraph({children:[new TextRun({text:""})]}));
     if(ph.length===1) out.push(...singleFigure(ph[0]));
     else if(ph.length>1){ out.push(new Paragraph({spacing:{before:80},children:[]})); out.push(galleryTable(ph)); out.push(new Paragraph({spacing:{after:80},children:[]})); }
