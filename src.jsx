@@ -1,5 +1,5 @@
 import { useState, useRef, useMemo, useEffect, useLayoutEffect } from "react";
-import { Document, Packer, Paragraph, TextRun, ImageRun, AlignmentType, BorderStyle } from "docx";
+import { Document, Packer, Paragraph, TextRun, ImageRun, AlignmentType, BorderStyle, Table, TableRow, TableCell, TableAnchorType, RelativeHorizontalPosition, OverlapType, WidthType } from "docx";
 import {
   Mountain, Waves, Church, Landmark, Footprints, MapPin, Home as HomeIcon,
   Star, ChevronLeft, ChevronUp, ChevronDown, Camera, ScanLine, Users, HelpCircle, Lock, Unlock,
@@ -12,6 +12,7 @@ const C = {
   line: "#ddd2bf", brass: "#b0894a", brassDk: "#8f6e37", olive: "#6b7350",
   teal: "#2c5f61", clay: "#a9612f",
 };
+const APP_VERSION = "1.0.0";
 const F_DISP = "'Cinzel', 'Trajan Pro', Georgia, serif";
 const F_SERIF = "'Frank Ruhl Libre', 'Frank Ruehl', Georgia, serif";
 function Fonts(){return(<style>{`@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@400;500;700&display=swap');`}</style>);}
@@ -268,6 +269,7 @@ function Landing({trips,onOpen,onCreate,onDelete}){
       ):(
         <button onClick={()=>setAdding(true)} className="mt-4 w-full py-3 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2" style={{border:`1.5px dashed ${C.brass}`,color:C.brassDk,background:"transparent"}}><Plus size={16}/> New trip</button>
       )}
+      <div style={{textAlign:"center",marginTop:28,fontSize:11,color:C.inkSoft,opacity:0.7}}>In the Steps of the Master · v{APP_VERSION}</div>
     </div>
   );
 }
@@ -701,14 +703,15 @@ function VisitPanel({visit,setVisit,members,isTest,siteName}){
       }catch(e){/* skip unreadable file */}
     }
     if(!added.length) return;
+    added.forEach((p)=>{p.captioning=true;});
     setPhotos([...visit.photos,...added]);
     // fire-and-forget AI caption drafts; never blocks, never overwrites a user's edit
     added.forEach((ph)=>{
       fetch("/.netlify/functions/caption",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({data:ph.dataUrl.split(",")[1],context:siteName||""})})
         .then((r)=>r.ok?r.json():null)
-        .then((d)=>{const cap=(d&&d.text||"").trim();if(!cap)return;
-          setVisitRef.current((v)=>({...v,photos:v.photos.map((p)=>p.id===ph.id&&!p.caption?{...p,caption:cap}:p)}));})
-        .catch(()=>{});
+        .then((d)=>{const cap=(d&&d.text||"").trim();
+          setVisitRef.current((v)=>({...v,photos:v.photos.map((p)=>p.id===ph.id?{...p,captioning:false,caption:(!p.caption&&cap)?cap:p.caption}:p)}));})
+        .catch(()=>{setVisitRef.current((v)=>({...v,photos:v.photos.map((p)=>p.id===ph.id?{...p,captioning:false}:p)}));});
     });
   }
   const updatePhoto=(id,patch)=>setPhotos(visit.photos.map((p)=>(p.id===id?{...p,...patch}:p)));
@@ -760,7 +763,11 @@ function PhotoRow({photo,members,onCaption,onToggle,onRemove}){
     <div className="flex flex-col sm:flex-row gap-3 p-3 rounded-xl" style={{background:C.card,border:`1px solid ${C.line}`}}>
       <div className="relative shrink-0"><img src={photo.dataUrl} alt="" style={{width:"100%",maxWidth:180,height:130,objectFit:"cover",borderRadius:10}}/><button onClick={onRemove} className="absolute top-1.5 right-1.5 p-1 rounded-full" style={{background:"rgba(0,0,0,0.55)"}}><Trash2 size={13} color="#fff"/></button></div>
       <div className="flex-1 min-w-0">
-        <input value={photo.caption} onChange={(e)=>onCaption(e.target.value)} placeholder="Caption (shown beneath the photo)" className="w-full p-2 rounded-lg text-sm" style={{background:C.stone,border:`1px solid ${C.line}`,color:C.ink,outline:"none"}}/>
+        {photo.captioning?(
+          <div className="flex items-center gap-2 p-2 rounded-lg" style={{background:C.stone,border:`1px solid ${C.line}`}}><Loader2 size={14} className="animate-spin" style={{color:C.brass}}/><span style={{fontSize:12.5,color:C.inkSoft}}>Drafting a caption…</span></div>
+        ):(
+          <AutoTextarea value={photo.caption} onChange={(e)=>onCaption(e.target.value)} minRows={1} placeholder="Caption (shown beneath the photo)" style={{background:C.stone,border:`1px solid ${C.line}`,color:C.ink,fontSize:14,lineHeight:1.4,outline:"none"}}/>
+        )}
         {suggested.length>0&&(<><div style={{fontSize:11,color:C.teal,margin:"9px 0 5px",fontWeight:600}} className="flex items-center gap-1"><Sparkles size={11}/> Suggested — tap to confirm</div><div className="flex flex-wrap gap-1.5">{suggested.map(chip)}</div></>)}
         <div style={{fontSize:11,color:C.inkSoft,margin:"9px 0 5px"}}>Everyone in the group</div>
         <div className="flex flex-wrap gap-1.5">{photo.people.map((id)=>members.find((m)=>m.id===id)).filter(Boolean).map(chip)}{others.filter((m)=>!photo.people.includes(m.id)).map(chip)}</div>
@@ -946,20 +953,47 @@ function ExportModal({meta,isJer,trip,patch,getSite,onClose}){
 
   const INK="233038", BRASS="8f6e37", OLIVE="6b7350", SLATE="4a5a63";
   function notesParas(text){ return (text||"").split("\n").map((line)=> new Paragraph({ spacing:{after:120}, children:[ new TextRun({ text:line, size:23, color:INK, font:"Georgia" }) ] })); }
-  function photoParas(photos){
-    const out=[];
-    (photos||[]).forEach((p)=>{
-      const b64=(p.dataUrl||"").split(",")[1]; if(!b64) return;
-      const wPx = p.portrait ? 250 : 360;
-      const ratio = (p.w && p.h) ? (p.h/p.w) : (p.portrait?1.4:0.7);
-      const hPx = Math.round(wPx*ratio);
-      out.push(new Paragraph({ alignment:AlignmentType.CENTER, spacing:{before:60,after:20}, children:[
-        new ImageRun({ type:"jpg", data:b64ToBytes(b64), transformation:{ width:wPx, height:hPx } })
-      ] }));
-      const names=p.people.map(memberName).filter(Boolean).join(", ");
-      const cap=[p.caption, names&&`(${names})`].filter(Boolean).join(" ");
-      if(cap) out.push(new Paragraph({ alignment:AlignmentType.CENTER, spacing:{after:140}, children:[ new TextRun({ text:cap, italics:true, size:18, color:SLATE, font:"Georgia" }) ] }));
+  const NOB={style:BorderStyle.NONE,size:0,color:"FFFFFF"};
+  const NO_BORDERS={top:NOB,bottom:NOB,left:NOB,right:NOB,insideHorizontal:NOB,insideVertical:NOB};
+  function photoCap(p){ const names=p.people.map(memberName).filter(Boolean).join(", "); return [p.caption, names&&`(${names})`].filter(Boolean).join(" "); }
+  function photoDims(p, wPx){ const ratio=(p.w&&p.h)?(p.h/p.w):(p.portrait?1.4:0.7); return { wPx, hPx:Math.round(wPx*ratio) }; }
+  // floated figure (image + caption) that body text wraps around, newspaper-style
+  function figure(p, side){
+    const b64=(p.dataUrl||"").split(",")[1]; if(!b64) return null;
+    const { wPx, hPx }=photoDims(p, p.portrait?200:290);
+    const cap=photoCap(p);
+    const cell=new TableCell({ borders:NO_BORDERS, margins:{top:0,bottom:0,left:30,right:30}, children:[
+      new Paragraph({ spacing:{after:0}, children:[ new ImageRun({ type:"jpg", data:b64ToBytes(b64), transformation:{ width:wPx, height:hPx } }) ] }),
+      ...(cap?[new Paragraph({ spacing:{before:20,after:0}, children:[ new TextRun({ text:cap, italics:true, size:16, color:SLATE, font:"Georgia" }) ] })]:[]),
+    ]});
+    return new Table({
+      float:{ horizontalAnchor:TableAnchorType.TEXT, verticalAnchor:TableAnchorType.TEXT,
+        relativeHorizontalPosition: side==="left"?RelativeHorizontalPosition.LEFT:RelativeHorizontalPosition.RIGHT,
+        overlap:OverlapType.NEVER, leftFromText: side==="left"?0:200, rightFromText: side==="left"?200:0, topFromText:40, bottomFromText:120 },
+      width:{ size:wPx*15, type:WidthType.DXA }, borders:NO_BORDERS,
+      rows:[ new TableRow({ children:[cell] }) ],
     });
+  }
+  // centered inline figure for the grouped gallery after the text
+  function inlineFigure(p){
+    const b64=(p.dataUrl||"").split(",")[1]; if(!b64) return [];
+    const { wPx, hPx }=photoDims(p, p.portrait?250:360);
+    const cap=photoCap(p); const out=[
+      new Paragraph({ alignment:AlignmentType.CENTER, spacing:{before:80,after:20}, children:[ new ImageRun({ type:"jpg", data:b64ToBytes(b64), transformation:{ width:wPx, height:hPx } }) ] }),
+    ];
+    if(cap) out.push(new Paragraph({ alignment:AlignmentType.CENTER, spacing:{after:140}, children:[ new TextRun({ text:cap, italics:true, size:18, color:SLATE, font:"Georgia" }) ] }));
+    return out;
+  }
+  // one journal entry -> floated figures + wrapped text + grouped gallery
+  function entryChildren(text, photos){
+    const ph=photos||[]; const tlen=(text||"").trim().length;
+    // enough text to wrap? allow ~1 float per 320 chars, capped at 2
+    let floatN=0; if(ph.length){ if(tlen>=180) floatN=Math.min(ph.length,2,Math.max(1,Math.floor(tlen/320))); }
+    const floated=ph.slice(0,floatN), grouped=ph.slice(floatN);
+    const out=[];
+    floated.forEach((p,i)=>{ const f=figure(p, i%2===0?"left":"right"); if(f) out.push(f); });
+    if(text&&text.trim()) out.push(...notesParas(text)); else out.push(new Paragraph({children:[new TextRun({text:""})]}));
+    grouped.forEach((p)=>{ out.push(...inlineFigure(p)); });
     return out;
   }
   function dayHeading(t){ return new Paragraph({ spacing:{before:280,after:60}, border:{ bottom:{ color:"b0894a", space:4, size:12, style:BorderStyle.SINGLE } }, children:[ new TextRun({ text:t, bold:true, size:30, color:INK, font:"Georgia" }) ] }); }
@@ -968,8 +1002,7 @@ function ExportModal({meta,isJer,trip,patch,getSite,onClose}){
   function impBlock(e){
     const out=[ new Paragraph({ spacing:{before:200,after:0}, children:[ new TextRun({ text:(e.title||"Untitled entry")+(e.locked?"  \uD83D\uDD12":""), bold:true, size:26, color:BRASS, font:"Georgia" }), new TextRun({ text:"  \u2014 impromptu", size:18, color:OLIVE, font:"Georgia" }) ] }) ];
     if(e.date) out.push(new Paragraph({ spacing:{after:80}, children:[ new TextRun({ text:e.date, italics:true, size:20, color:OLIVE, font:"Georgia" }) ] }));
-    if(e.text?.trim()) out.push(...notesParas(e.text));
-    out.push(...photoParas(e.photos));
+    out.push(...entryChildren(e.text, e.photos));
     return out;
   }
 
@@ -993,8 +1026,7 @@ function ExportModal({meta,isJer,trip,patch,getSite,onClose}){
         const site=getSite(sid); const e=journal[sid]||{};
         kids.push(siteHeading(site.name, e.locked));
         if(site.blurb) kids.push(blurbPara(site.blurb));
-        if(e.text?.trim()) kids.push(...notesParas(e.text));
-        kids.push(...photoParas(e.photos));
+        kids.push(...entryChildren(e.text, e.photos));
       });
       dayImps.forEach((e)=>{ kids.push(...impBlock(e)); });
     });
