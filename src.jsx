@@ -12,7 +12,7 @@ const C = {
   line: "#ddd2bf", brass: "#b0894a", brassDk: "#8f6e37", olive: "#6b7350",
   teal: "#2c5f61", clay: "#a9612f",
 };
-const APP_VERSION = "1.1.2";
+const APP_VERSION = "1.1.3";
 const F_DISP = "'Cinzel', 'Trajan Pro', Georgia, serif";
 const F_SERIF = "'Frank Ruhl Libre', 'Frank Ruehl', Georgia, serif";
 function Fonts(){return(<style>{`@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@400;500;700&display=swap');`}</style>);}
@@ -970,6 +970,16 @@ function ExportModal({meta,isJer,trip,patch,getSite,onClose}){
     if(text&&text.trim()) out.push(...notesParas(text)); else if(!ph.length) out.push(new Paragraph({children:[new TextRun({text:""})]}));
     if(ph.length===1) out.push(...singleFigure(ph[0]));
     else if(ph.length>1){ out.push(new Paragraph({spacing:{before:80},children:[]})); out.push(galleryTable(ph)); out.push(new Paragraph({spacing:{after:80},children:[]})); }
+    return out;
+  }
+
+  function dayHeading(t){ return new Paragraph({ spacing:{before:280,after:60}, border:{ bottom:{ color:"b0894a", space:4, size:12, style:BorderStyle.SINGLE } }, children:[ new TextRun({ text:t, bold:true, size:30, color:INK, font:"Georgia" }) ] }); }
+  function siteHeading(t,locked){ return new Paragraph({ spacing:{before:200,after:20}, children:[ new TextRun({ text:t+(locked?"  \uD83D\uDD12":""), bold:true, size:26, color:BRASS, font:"Georgia" }) ] }); }
+  function blurbPara(t){ return new Paragraph({ spacing:{after:80}, children:[ new TextRun({ text:t, italics:true, size:20, color:OLIVE, font:"Georgia" }) ] }); }
+  function impBlock(e){
+    const out=[ new Paragraph({ spacing:{before:200,after:0}, children:[ new TextRun({ text:(e.title||"Untitled entry")+(e.locked?"  \uD83D\uDD12":""), bold:true, size:26, color:BRASS, font:"Georgia" }), new TextRun({ text:"  \u2014 impromptu", size:18, color:OLIVE, font:"Georgia" }) ] }) ];
+    if(e.date) out.push(new Paragraph({ spacing:{after:80}, children:[ new TextRun({ text:e.date, italics:true, size:20, color:OLIVE, font:"Georgia" }) ] }));
+    out.push(...entryChildren(e.text, e.photos));
     return out;
   }
 
