@@ -1,5 +1,5 @@
 import { useState, useRef, useMemo, useEffect, useLayoutEffect } from "react";
-import { Document, Packer, Paragraph, TextRun, ImageRun, AlignmentType, BorderStyle, Table, TableRow, TableCell, WidthType, VerticalAlign } from "docx";
+import { Document, Packer, Paragraph, TextRun, ImageRun, AlignmentType, BorderStyle } from "docx";
 import {
   Mountain, Waves, Church, Landmark, Footprints, MapPin, Home as HomeIcon,
   Star, ChevronLeft, ChevronUp, ChevronDown, Camera, ScanLine, Users, HelpCircle, Lock, Unlock,
@@ -12,7 +12,7 @@ const C = {
   line: "#ddd2bf", brass: "#b0894a", brassDk: "#8f6e37", olive: "#6b7350",
   teal: "#2c5f61", clay: "#a9612f",
 };
-const APP_VERSION = "1.2.0";
+const APP_VERSION = "1.2.1";
 const F_DISP = "'Cinzel', 'Trajan Pro', Georgia, serif";
 const F_SERIF = "'Frank Ruhl Libre', 'Frank Ruehl', Georgia, serif";
 function Fonts(){return(<style>{`@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@400;500;700&display=swap');`}</style>);}
@@ -960,24 +960,22 @@ function ExportModal({meta,isJer,trip,patch,getSite,onClose}){
   function photoB64(p){ const s=(p&&p.dataUrl)||""; const i=s.indexOf(","); const b=i>=0?s.slice(i+1):""; return b.length>32?b:null; }
   function photoCap(p){ const names=(p.people||[]).map(memberName).filter(Boolean).join(", "); return [p.caption, names&&`(${names})`].filter(Boolean).join(" "); }
   function dims(p,wPx){ const ratio=(p.w&&p.h)?(p.h/p.w):(p.portrait?1.4:0.7); return { wPx, hPx:Math.round(wPx*ratio) }; }
-  function imgPara(p,wPx){ const b64=photoB64(p); if(!b64) return new Paragraph({children:[]}); const {hPx}=dims(p,wPx); return new Paragraph({ alignment:AlignmentType.CENTER, spacing:{after:0}, children:[ new ImageRun({ type:"jpg", data:b64ToBytes(b64), transformation:{ width:wPx, height:hPx } }) ] }); }
-  function capPara(cap){ return new Paragraph({ alignment:AlignmentType.CENTER, spacing:{before:20,after:0}, children:[ new TextRun({ text:cap, italics:true, size:17, color:SLATE, font:"Georgia" }) ] }); }
-  // single photo, centered
-  function singleFigure(p){ const b64=photoB64(p); if(!b64) return []; const {wPx,hPx}=dims(p, p.portrait?250:380); const cap=photoCap(p); const out=[ new Paragraph({ alignment:AlignmentType.CENTER, spacing:{before:120,after:0}, children:[ new ImageRun({ type:"jpg", data:b64ToBytes(b64), transformation:{width:wPx,height:hPx} }) ] }) ]; if(cap) out.push(capPara(cap)); out.push(new Paragraph({spacing:{after:160},children:[]})); return out; }
-  // 2-up grid gallery, captions under each within column width
-  function gridCell(p){ const ok=p&&photoB64(p); const cap=ok?photoCap(p):""; const kids=[]; if(ok){ kids.push(imgPara(p,235)); if(cap) kids.push(capPara(cap)); } else { kids.push(new Paragraph({children:[]})); } return new TableCell({ borders:NO_BORDERS, verticalAlign:VerticalAlign.TOP, margins:{top:60,bottom:160,left:60,right:60}, width:{size:50,type:WidthType.PERCENTAGE}, children:kids }); }
-  function galleryTable(photos){ const rows=[]; for(let i=0;i<photos.length;i+=2){ rows.push(new TableRow({ children:[ gridCell(photos[i]), gridCell(photos[i+1]||null) ] })); } return new Table({ alignment:AlignmentType.CENTER, width:{size:100,type:WidthType.PERCENTAGE}, borders:NO_BORDERS, rows }); }
+  const CONTENT_W=10240; // twips of text column (page 12240 - 1000 margins x2)
+  function capPara(cap,wPx){ const side=Math.max(0,Math.round((CONTENT_W-wPx*15)/2)); return new Paragraph({ alignment:AlignmentType.CENTER, spacing:{before:20,after:0}, indent:{left:side,right:side}, children:[ new TextRun({ text:cap, italics:true, size:17, color:SLATE, font:"Georgia" }) ] }); }
+  // one centered photo with a caption constrained to the image width (no tables -> renders everywhere)
+  function singleFigure(p){ const b64=photoB64(p); if(!b64) return []; const {wPx,hPx}=dims(p, p.portrait?250:380); const cap=photoCap(p);
+    const out=[ new Paragraph({ alignment:AlignmentType.CENTER, spacing:{before:140,after:0}, children:[ new ImageRun({ type:"jpg", data:b64ToBytes(b64), transformation:{width:wPx,height:hPx} }) ] }) ];
+    if(cap) out.push(capPara(cap,wPx));
+    out.push(new Paragraph({ spacing:{after:180}, children:[] }));
+    return out; }
   function entryChildren(text, photos){
     const ph=(photos||[]).filter((p)=>photoB64(p));
     const blocks=normalizeBlocks(text); const out=[];
     if(!ph.length){ if(blocks.length) blocks.forEach((b)=>out.push(paraOf(b))); else out.push(new Paragraph({children:[new TextRun({text:""})]})); return out; }
-    if(!blocks.length){ if(ph.length===1) out.push(...singleFigure(ph[0])); else out.push(galleryTable(ph)); return out; }
-    // distribute photos evenly between paragraphs so they sit near the text
+    if(!blocks.length){ ph.forEach((p)=>out.push(...singleFigure(p))); return out; }
     const per=Math.max(1,Math.ceil(blocks.length/ph.length)); let pi=0;
     blocks.forEach((b,i)=>{ out.push(paraOf(b)); if((i+1)%per===0 && pi<ph.length){ out.push(...singleFigure(ph[pi++])); } });
-    const rest=ph.slice(pi);
-    if(rest.length===1) out.push(...singleFigure(rest[0]));
-    else if(rest.length>1){ out.push(galleryTable(rest)); }
+    while(pi<ph.length){ out.push(...singleFigure(ph[pi++])); }
     return out;
   }
 
