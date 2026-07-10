@@ -12,7 +12,7 @@ const C = {
   line: "#ddd2bf", brass: "#b0894a", brassDk: "#8f6e37", olive: "#6b7350",
   teal: "#2c5f61", clay: "#a9612f",
 };
-const APP_VERSION = "1.2.1";
+const APP_VERSION = "1.2.2";
 const F_DISP = "'Cinzel', 'Trajan Pro', Georgia, serif";
 const F_SERIF = "'Frank Ruhl Libre', 'Frank Ruehl', Georgia, serif";
 function Fonts(){return(<style>{`@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@400;500;700&display=swap');`}</style>);}
@@ -960,36 +960,60 @@ function ExportModal({meta,isJer,trip,patch,getSite,onClose}){
   function photoB64(p){ const s=(p&&p.dataUrl)||""; const i=s.indexOf(","); const b=i>=0?s.slice(i+1):""; return b.length>32?b:null; }
   function photoCap(p){ const names=(p.people||[]).map(memberName).filter(Boolean).join(", "); return [p.caption, names&&`(${names})`].filter(Boolean).join(" "); }
   function dims(p,wPx){ const ratio=(p.w&&p.h)?(p.h/p.w):(p.portrait?1.4:0.7); return { wPx, hPx:Math.round(wPx*ratio) }; }
-  const CONTENT_W=10240; // twips of text column (page 12240 - 1000 margins x2)
-  function capPara(cap,wPx){ const side=Math.max(0,Math.round((CONTENT_W-wPx*15)/2)); return new Paragraph({ alignment:AlignmentType.CENTER, spacing:{before:20,after:0}, indent:{left:side,right:side}, children:[ new TextRun({ text:cap, italics:true, size:17, color:SLATE, font:"Georgia" }) ] }); }
-  // one centered photo with a caption constrained to the image width (no tables -> renders everywhere)
-  function singleFigure(p){ const b64=photoB64(p); if(!b64) return []; const {wPx,hPx}=dims(p, p.portrait?250:380); const cap=photoCap(p);
-    const out=[ new Paragraph({ alignment:AlignmentType.CENTER, spacing:{before:140,after:0}, children:[ new ImageRun({ type:"jpg", data:b64ToBytes(b64), transformation:{width:wPx,height:hPx} }) ] }) ];
-    if(cap) out.push(capPara(cap,wPx));
-    out.push(new Paragraph({ spacing:{after:180}, children:[] }));
-    return out; }
-  function entryChildren(text, photos){
-    const ph=(photos||[]).filter((p)=>photoB64(p));
+  // one centered figure (photo WITH caption already baked in), sized by orientation
+  function singleFigure(p, baked){ const b=baked&&baked[p.id]; if(!b) return []; const dispW=p.portrait?250:380; const dispH=Math.max(1,Math.round(dispW*(b.h/b.w)));
+    return [ new Paragraph({ alignment:AlignmentType.CENTER, spacing:{before:140,after:180}, children:[ new ImageRun({ type:"jpg", data:b64ToBytes(b.dataUrl.split(",")[1]), transformation:{width:dispW,height:dispH} }) ] }) ]; }
+  function entryChildren(text, photos, baked){
+    const ph=(photos||[]).filter((p)=>photoB64(p)&&baked&&baked[p.id]);
     const blocks=normalizeBlocks(text); const out=[];
     if(!ph.length){ if(blocks.length) blocks.forEach((b)=>out.push(paraOf(b))); else out.push(new Paragraph({children:[new TextRun({text:""})]})); return out; }
-    if(!blocks.length){ ph.forEach((p)=>out.push(...singleFigure(p))); return out; }
+    if(!blocks.length){ ph.forEach((p)=>out.push(...singleFigure(p,baked))); return out; }
     const per=Math.max(1,Math.ceil(blocks.length/ph.length)); let pi=0;
-    blocks.forEach((b,i)=>{ out.push(paraOf(b)); if((i+1)%per===0 && pi<ph.length){ out.push(...singleFigure(ph[pi++])); } });
-    while(pi<ph.length){ out.push(...singleFigure(ph[pi++])); }
+    blocks.forEach((b,i)=>{ out.push(paraOf(b)); if((i+1)%per===0 && pi<ph.length){ out.push(...singleFigure(ph[pi++],baked)); } });
+    while(pi<ph.length){ out.push(...singleFigure(ph[pi++],baked)); }
     return out;
   }
 
   function dayHeading(t){ return new Paragraph({ spacing:{before:280,after:60}, border:{ bottom:{ color:"b0894a", space:4, size:12, style:BorderStyle.SINGLE } }, children:[ new TextRun({ text:t, bold:true, size:30, color:INK, font:"Georgia" }) ] }); }
   function siteHeading(t,locked){ return new Paragraph({ spacing:{before:200,after:20}, children:[ new TextRun({ text:t+(locked?"  \uD83D\uDD12":""), bold:true, size:26, color:BRASS, font:"Georgia" }) ] }); }
   function blurbPara(t){ return new Paragraph({ spacing:{after:80}, children:[ new TextRun({ text:t, italics:true, size:20, color:OLIVE, font:"Georgia" }) ] }); }
-  function impBlock(e){
+  function impBlock(e, baked){
     const out=[ new Paragraph({ spacing:{before:200,after:0}, children:[ new TextRun({ text:(e.title||"Untitled entry")+(e.locked?"  \uD83D\uDD12":""), bold:true, size:26, color:BRASS, font:"Georgia" }), new TextRun({ text:"  \u2014 impromptu", size:18, color:OLIVE, font:"Georgia" }) ] }) ];
     if(e.date) out.push(new Paragraph({ spacing:{after:80}, children:[ new TextRun({ text:e.date, italics:true, size:20, color:OLIVE, font:"Georgia" }) ] }));
-    out.push(...entryChildren(e.text, e.photos));
+    out.push(...entryChildren(e.text, e.photos, baked));
     return out;
   }
 
+  // draw the caption onto the photo so the two become ONE image -> caption always
+  // stays with the photo (even when the user wraps text around it in Google Docs)
+  function loadImg(url){ return new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=()=>rej(new Error("img")); i.src=url; }); }
+  function wrapLines(ctx,text,maxW){ const words=(text||"").split(/\s+/); const lines=[]; let line=""; for(const w of words){ const t=line?line+" "+w:w; if(ctx.measureText(t).width>maxW && line){ lines.push(line); line=w; } else line=t; } if(line) lines.push(line); return lines; }
+  async function bakeFigure(p){
+    const cap=photoCap(p);
+    let img; try{ img=await loadImg(p.dataUrl); }catch(e){ return null; }
+    const maxDim=1000, iw=img.naturalWidth||img.width, ih=img.naturalHeight||img.height;
+    const s=Math.min(1, maxDim/Math.max(iw,ih)); const w=Math.max(1,Math.round(iw*s)), h=Math.max(1,Math.round(ih*s));
+    const fpx=Math.max(14, Math.round(w*0.032)), pad=Math.round(fpx*0.7), lh=Math.round(fpx*1.28);
+    const cv=document.createElement("canvas"); const mctx=cv.getContext("2d"); mctx.font=`italic ${fpx}px Georgia, serif`;
+    const lines=cap?wrapLines(mctx,cap,w-2*pad):[]; const capH=cap?(pad+lines.length*lh+pad):0;
+    cv.width=w; cv.height=h+capH; const c=cv.getContext("2d");
+    c.fillStyle="#ffffff"; c.fillRect(0,0,cv.width,cv.height); c.drawImage(img,0,0,w,h);
+    if(cap){ c.font=`italic ${fpx}px Georgia, serif`; c.fillStyle="#4a5a63"; c.textAlign="center"; c.textBaseline="alphabetic";
+      let y=h+pad+fpx*0.82; for(const ln of lines){ c.fillText(ln,w/2,y); y+=lh; } }
+    return { dataUrl:cv.toDataURL("image/jpeg",0.85), w:cv.width, h:cv.height, portrait:p.portrait };
+  }
+  // pre-bake every selected photo (by id) so figure building stays synchronous
+  async function bakeAll(ids){
+    const map={}; const jobs=[];
+    const collect=(photos)=>{ (photos||[]).forEach((p)=>{ if(photoB64(p)) jobs.push([p.id,p]); }); };
+    itinerary.forEach((day)=>{ day.sids.filter((sid)=>ids.includes(sid)).forEach((sid)=>collect((journal[sid]||{}).photos)); });
+    impromptu.filter((e)=>ids.includes(e.id)).forEach((e)=>collect(e.photos));
+    await Promise.all(jobs.map(async ([id,p])=>{ const b=await bakeFigure(p); if(b) map[id]=b; }));
+    return map;
+  }
+
   async function buildAndSave(ids, tag){
+    const baked=await bakeAll(ids);
     const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
     const impSel=impromptu.filter((e)=>ids.includes(e.id)).slice().sort((a,b)=>(a.ts||0)-(b.ts||0));
     const impByDay={}, impLeftover=[];
@@ -1009,11 +1033,11 @@ function ExportModal({meta,isJer,trip,patch,getSite,onClose}){
         const site=getSite(sid); const e=journal[sid]||{};
         kids.push(siteHeading(site.name, e.locked));
         if(site.blurb) kids.push(blurbPara(site.blurb));
-        kids.push(...entryChildren(e.text, e.photos));
+        kids.push(...entryChildren(e.text, e.photos, baked));
       });
-      dayImps.forEach((e)=>{ kids.push(...impBlock(e)); });
+      dayImps.forEach((e)=>{ kids.push(...impBlock(e, baked)); });
     });
-    if(impLeftover.length){ kids.push(dayHeading("Other Moments")); impLeftover.forEach((e)=>{ kids.push(...impBlock(e)); }); }
+    if(impLeftover.length){ kids.push(dayHeading("Other Moments")); impLeftover.forEach((e)=>{ kids.push(...impBlock(e, baked)); }); }
     if(kids.length<=3) kids.push(new Paragraph({ children:[ new TextRun({ text:"No entries yet.", color:SLATE }) ] }));
 
     const doc=new Document({ sections:[{ properties:{ page:{ margin:{ top:900, bottom:900, left:1000, right:1000 } } }, children:kids }] });
