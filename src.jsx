@@ -12,7 +12,7 @@ const C = {
   line: "#ddd2bf", brass: "#b0894a", brassDk: "#8f6e37", olive: "#6b7350",
   teal: "#2c5f61", clay: "#a9612f",
 };
-const APP_VERSION = "1.1.1";
+const APP_VERSION = "1.1.2";
 const F_DISP = "'Cinzel', 'Trajan Pro', Georgia, serif";
 const F_SERIF = "'Frank Ruhl Libre', 'Frank Ruehl', Georgia, serif";
 function Fonts(){return(<style>{`@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@400;500;700&display=swap');`}</style>);}
@@ -1009,7 +1009,8 @@ function ExportModal({meta,isJer,trip,patch,getSite,onClose}){
     const nbl={...buildLog}; ids.forEach((id)=>(nbl[id]=visitSig(entryOf(id)))); patch({version:v,buildLog:nbl}); setSaved(fname);
   }
   const [building,setBuilding]=useState(false);
-  const runBuild=async(ids,tag)=>{ setBuilding(true); try{ await buildAndSave(ids,tag); }catch(e){ setSaved("ERROR"); } setBuilding(false); };
+  const [buildErr,setBuildErr]=useState("");
+  const runBuild=async(ids,tag)=>{ setBuilding(true); setBuildErr(""); setSaved(null); try{ await buildAndSave(ids,tag); }catch(e){ console.error("export build failed:",e); setSaved("ERROR"); setBuildErr((e&&e.message)?String(e.message):"Unknown error"); } setBuilding(false); };
   const buildFull=()=>runBuild(started,"");
   const buildNew=()=>runBuild(buildable.map((r)=>r.sid),"-new");
 
@@ -1038,7 +1039,7 @@ function ExportModal({meta,isJer,trip,patch,getSite,onClose}){
               </div>
             )}
           </div>
-          {saved==="ERROR"&&(<div className="p-2.5 rounded-lg mb-3 text-xs" style={{background:"#fbeeea",color:C.clay,border:`1px solid ${C.clay}44`}}>Something went wrong building the document. Try again, or remove a very large photo.</div>)}
+          {saved==="ERROR"&&(<div className="p-2.5 rounded-lg mb-3 text-xs" style={{background:"#fbeeea",color:C.clay,border:`1px solid ${C.clay}44`}}>Couldn't build the document.<br/><span style={{opacity:0.85}}>Reason: {buildErr||"unknown"}</span></div>)}
           {saved&&saved!=="ERROR"&&(<div className="p-2.5 rounded-lg mb-3 text-xs" style={{background:`${C.olive}18`,color:C.olive,border:`1px solid ${C.olive}44`}}>
             <div className="flex items-center gap-2"><Check size={13}/> <span>Saved <b>{saved}</b>{drive.connected?` to Drive · ${drive.folder}`:" to this device"}.</span></div>
             {!drive.connected&&<div style={{marginTop:6,color:C.ink,lineHeight:1.5}}>
