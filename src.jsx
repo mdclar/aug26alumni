@@ -12,7 +12,7 @@ const C = {
   line: "#ddd2bf", brass: "#b0894a", brassDk: "#8f6e37", olive: "#6b7350",
   teal: "#2c5f61", clay: "#a9612f",
 };
-const APP_VERSION = "1.1.3";
+const APP_VERSION = "1.2.0";
 const F_DISP = "'Cinzel', 'Trajan Pro', Georgia, serif";
 const F_SERIF = "'Frank Ruhl Libre', 'Frank Ruehl', Georgia, serif";
 function Fonts(){return(<style>{`@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@400;500;700&display=swap');`}</style>);}
@@ -952,7 +952,9 @@ function ExportModal({meta,isJer,trip,patch,getSite,onClose}){
   const onToggleLock=(sid)=>patch({journal:{...journal,[sid]:{...(journal[sid]||{text:"",photos:[]}),locked:!(journal[sid]?.locked)}}});
 
   const INK="233038", BRASS="8f6e37", OLIVE="6b7350", SLATE="4a5a63";
-  function notesParas(text){ return (text||"").split("\n").map((line)=> new Paragraph({ spacing:{after:120}, children:[ new TextRun({ text:line, size:23, color:INK, font:"Georgia" }) ] })); }
+  function normalizeBlocks(text){ return (text||"").replace(/\r/g,"").split(/\n\s*\n/).map((b)=>b.replace(/\n/g," ").replace(/\s+/g," ").trim()).filter(Boolean); }
+  function paraOf(t){ return new Paragraph({ spacing:{after:160}, children:[ new TextRun({ text:t, size:23, color:INK, font:"Georgia" }) ] }); }
+  function notesParas(text){ return normalizeBlocks(text).map(paraOf); }
   const NOB={style:BorderStyle.NONE,size:0,color:"FFFFFF"};
   const NO_BORDERS={top:NOB,bottom:NOB,left:NOB,right:NOB,insideHorizontal:NOB,insideVertical:NOB};
   function photoB64(p){ const s=(p&&p.dataUrl)||""; const i=s.indexOf(","); const b=i>=0?s.slice(i+1):""; return b.length>32?b:null; }
@@ -966,10 +968,16 @@ function ExportModal({meta,isJer,trip,patch,getSite,onClose}){
   function gridCell(p){ const ok=p&&photoB64(p); const cap=ok?photoCap(p):""; const kids=[]; if(ok){ kids.push(imgPara(p,235)); if(cap) kids.push(capPara(cap)); } else { kids.push(new Paragraph({children:[]})); } return new TableCell({ borders:NO_BORDERS, verticalAlign:VerticalAlign.TOP, margins:{top:60,bottom:160,left:60,right:60}, width:{size:50,type:WidthType.PERCENTAGE}, children:kids }); }
   function galleryTable(photos){ const rows=[]; for(let i=0;i<photos.length;i+=2){ rows.push(new TableRow({ children:[ gridCell(photos[i]), gridCell(photos[i+1]||null) ] })); } return new Table({ alignment:AlignmentType.CENTER, width:{size:100,type:WidthType.PERCENTAGE}, borders:NO_BORDERS, rows }); }
   function entryChildren(text, photos){
-    const ph=(photos||[]).filter((p)=>photoB64(p)); const out=[];
-    if(text&&text.trim()) out.push(...notesParas(text)); else if(!ph.length) out.push(new Paragraph({children:[new TextRun({text:""})]}));
-    if(ph.length===1) out.push(...singleFigure(ph[0]));
-    else if(ph.length>1){ out.push(new Paragraph({spacing:{before:80},children:[]})); out.push(galleryTable(ph)); out.push(new Paragraph({spacing:{after:80},children:[]})); }
+    const ph=(photos||[]).filter((p)=>photoB64(p));
+    const blocks=normalizeBlocks(text); const out=[];
+    if(!ph.length){ if(blocks.length) blocks.forEach((b)=>out.push(paraOf(b))); else out.push(new Paragraph({children:[new TextRun({text:""})]})); return out; }
+    if(!blocks.length){ if(ph.length===1) out.push(...singleFigure(ph[0])); else out.push(galleryTable(ph)); return out; }
+    // distribute photos evenly between paragraphs so they sit near the text
+    const per=Math.max(1,Math.ceil(blocks.length/ph.length)); let pi=0;
+    blocks.forEach((b,i)=>{ out.push(paraOf(b)); if((i+1)%per===0 && pi<ph.length){ out.push(...singleFigure(ph[pi++])); } });
+    const rest=ph.slice(pi);
+    if(rest.length===1) out.push(...singleFigure(rest[0]));
+    else if(rest.length>1){ out.push(galleryTable(rest)); }
     return out;
   }
 
