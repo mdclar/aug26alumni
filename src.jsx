@@ -12,7 +12,7 @@ const C = {
   line: "#ddd2bf", brass: "#b0894a", brassDk: "#8f6e37", olive: "#6b7350",
   teal: "#2c5f61", clay: "#a9612f",
 };
-const APP_VERSION = "1.2.3";
+const APP_VERSION = "1.2.4";
 const F_DISP = "'Cinzel', 'Trajan Pro', Georgia, serif";
 const F_SERIF = "'Frank Ruhl Libre', 'Frank Ruehl', Georgia, serif";
 function Fonts(){return(<style>{`@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@400;500;700&display=swap');`}</style>);}
@@ -623,7 +623,7 @@ function SitePage({sid,isJer,site,date,tripName,visit,setVisit,customSite,setCus
               </summary>
               <div className="px-3.5 pb-3.5">
                 {info.talmageText&&<p style={{fontSize:14.5,color:C.ink,lineHeight:1.65,whiteSpace:"pre-wrap",fontFamily:F_SERIF}}>{info.talmageText}</p>}
-                <a href="https://www.gutenberg.org/ebooks/22542" target="_blank" rel="noopener noreferrer" style={{fontSize:12.5,color:C.teal}}>Full book — free on Project Gutenberg (public domain) ↗</a>
+                {(()=>{ const ch=(info.talmageRef.match(/Chapter\s+(\d+)/)||[])[1]; const url=ch?`https://www.gutenberg.org/files/22542/22542-h/22542-h.htm#chapter_${ch}`:"https://www.gutenberg.org/ebooks/22542"; return <a href={url} target="_blank" rel="noopener noreferrer" style={{fontSize:12.5,color:C.teal}}>Read this chapter free on Project Gutenberg (public domain) ↗</a>; })()}
               </div>
             </details>
           )}
