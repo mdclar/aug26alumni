@@ -12,7 +12,7 @@ const C = {
   line: "#ddd2bf", brass: "#b0894a", brassDk: "#8f6e37", olive: "#6b7350",
   teal: "#2c5f61", clay: "#a9612f",
 };
-const APP_VERSION = "1.6.1";
+const APP_VERSION = "1.6.2";
 const F_DISP = "'Cinzel', 'Trajan Pro', Georgia, serif";
 const F_SERIF = "'Frank Ruhl Libre', 'Frank Ruehl', Georgia, serif";
 function Fonts(){return(<style>{`@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@400;500;700&display=swap');`}</style>);}
@@ -213,7 +213,7 @@ export default function App(){
     if(!s&&id===JER_ID){ const legacy=await idbGet("v1"); s=legacy?{...jerTripState(),...legacy}:jerTripState(); }
     if(!s) s=emptyTripState();
     s=migrateTripState(s);
-    if(tripId===JER_ID) s=mergeBackbone(s);
+    if(id===JER_ID) s=mergeBackbone(s);
     setTrip(s); setHydrated(true); window.scrollTo(0,0);
   }
   function closeTrip(){ setTripId(null); setTrip(null); setView("home"); }
