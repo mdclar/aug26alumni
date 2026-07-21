@@ -4,7 +4,7 @@ import {
   Mountain, Waves, Church, Landmark, Footprints, MapPin, Home as HomeIcon,
   Star, ChevronLeft, ChevronUp, ChevronDown, Camera, ScanLine, Users, HelpCircle, Lock, Unlock,
   Download, Plus, X, BookOpen, Loader2, Trash2, Check, RotateCcw, UserPlus, Sparkles, Cloud,
-  BookText, Image as ImageIcon, ListOrdered, ExternalLink, Compass, Map as MapIcon,
+  BookText, Image as ImageIcon, ListOrdered, ExternalLink, Compass, Map as MapIcon, MessageCircle, Send,
 } from "lucide-react";
 
 const C = {
@@ -12,7 +12,7 @@ const C = {
   line: "#ddd2bf", brass: "#b0894a", brassDk: "#8f6e37", olive: "#6b7350",
   teal: "#2c5f61", clay: "#a9612f",
 };
-const APP_VERSION = "1.3.2";
+const APP_VERSION = "1.4.0";
 const F_DISP = "'Cinzel', 'Trajan Pro', Georgia, serif";
 const F_SERIF = "'Frank Ruhl Libre', 'Frank Ruehl', Georgia, serif";
 function Fonts(){return(<style>{`@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@400;500;700&display=swap');`}</style>);}
@@ -161,6 +161,7 @@ function migrateTripState(s){
 
 export default function App(){
   const [trips,setTrips]=useState([JER_META]);           // registry
+  const [homeChat,setHomeChat]=useState(false);
   const [tripId,setTripId]=useState(null);                // null = landing
   const [trip,setTrip]=useState(null);                    // active trip state
   const [view,setView]=useState("home");
@@ -219,8 +220,9 @@ export default function App(){
       <Fonts/>
       <TopBar meta={meta} view={view} setView={setView} saveState={saveState} onTrips={closeTrip}/>
       <div className="max-w-3xl mx-auto px-4 pb-24 pt-4">
-        {view==="home"&&(<Home meta={meta} isJer={isJer} trip={trip} patch={patch} getSite={getSite} openSite={openSite} onEditItinerary={()=>setView("itinerary")} openImp={openImp} addImp={addImp}/>)}
-        {view==="site"&&(<SitePage sid={activeSite} isJer={isJer} site={getSite(activeSite)} date={dateForSite(activeSite)} tripName={meta.name}
+        {view==="home"&&(<Home meta={meta} isJer={isJer} trip={trip} patch={patch} getSite={getSite} openSite={openSite} onEditItinerary={()=>setView("itinerary")} openImp={openImp} addImp={addImp} onAsk={()=>setHomeChat(true)}/>)}
+        <StudyChat open={homeChat} onClose={()=>setHomeChat(false)} ctx={{trip:meta.name,dates:meta.sub||"",day:"",site:"",about:"",talmage:"",scriptures:"",itinerary:(trip.itinerary||[]).map((d)=>`${d.label||d.date||""}: ${(d.sids||[]).map((x)=>getSite(x)?.name).filter(Boolean).join(", ")}`).join(" | ")}}/>
+        {view==="site"&&(<SitePage sid={activeSite} isJer={isJer} site={getSite(activeSite)} date={dateForSite(activeSite)} tripName={meta.name} tripSub={meta.sub||""} itinerary={trip.itinerary} getSite={getSite}
           visit={trip.journal[activeSite]||{text:"",photos:[],locked:false}} setVisit={(e)=>patch({journal:{...trip.journal,[activeSite]:e}})}
           customSite={trip.customSites[activeSite]} setCustomSite={(cs)=>patch({customSites:{...trip.customSites,[activeSite]:cs}})}
           members={trip.members} back={()=>setView("home")} onReset={activeSite==="home"?()=>resetSite("home"):null}/>)}
@@ -295,10 +297,11 @@ function TopBar({meta,view,setView,saveState,onTrips}){
   );
 }
 
-function Home({meta,isJer,trip,patch,getSite,openSite,onEditItinerary,openImp,addImp}){
+function Home({meta,isJer,trip,patch,getSite,openSite,onEditItinerary,openImp,addImp, onAsk}){
   const mapInput=useRef(null);
   return (
     <div>
+      {onAsk&&<button onClick={onAsk} className="fixed bottom-24 right-4 z-40 flex items-center gap-1.5 px-4 py-2.5 rounded-full shadow-lg" style={{background:C.teal,color:"#fff",fontSize:13,fontWeight:600}}><MessageCircle size={15}/> Ask</button>}
       <header className="pt-2 pb-4">
         <div className="mb-1"><ArchArcade height={92}/></div>
         <h1 style={{fontFamily:F_SERIF,fontSize:30,fontWeight:700,lineHeight:1.15,color:C.ink,marginTop:8,textAlign:"center"}}>{meta.name}</h1>
@@ -578,14 +581,76 @@ function Avatar({member,size=20,on}){
   return(<span className="flex items-center justify-center" style={{width:size,height:size,borderRadius:999,background:on?C.stone:C.line,color:on?C.ink:C.inkSoft,fontSize:size*0.42,fontWeight:700}}>{initials(member.name)}</span>);
 }
 
-function SitePage({sid,isJer,site,date,tripName,visit,setVisit,customSite,setCustomSite,members,back,onReset}){
+function StudyChat({open,onClose,ctx}){
+  const [msgs,setMsgs]=useState([]);
+  const [input,setInput]=useState("");
+  const [busy,setBusy]=useState(false);
+  const [err,setErr]=useState("");
+  const boxRef=useRef(null);
+  useEffect(()=>{ if(boxRef.current) boxRef.current.scrollTop=boxRef.current.scrollHeight; },[msgs,busy]);
+  useEffect(()=>{ if(open){ setErr(""); } },[open]);
+  if(!open) return null;
+  const send=async()=>{
+    const q=input.trim(); if(!q||busy) return;
+    const next=[...msgs,{role:"user",content:q}];
+    setMsgs(next); setInput(""); setBusy(true); setErr("");
+    try{
+      const res=await fetch("/.netlify/functions/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:next,ctx})});
+      if(!res.ok) throw new Error("offline");
+      const data=await res.json();
+      if(!data.reply) throw new Error("empty");
+      setMsgs([...next,{role:"assistant",content:data.reply}]);
+    }catch(e){ setErr("Couldn't reach the study companion — check your connection and try again."); setMsgs(msgs); setInput(q); }
+    setBusy(false);
+  };
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center" style={{background:"rgba(35,48,56,0.45)"}} onClick={onClose}>
+      <div onClick={(e)=>e.stopPropagation()} className="w-full sm:max-w-lg flex flex-col" style={{background:C.stone,borderRadius:"20px 20px 0 0",maxHeight:"85vh",height:"85vh"}}>
+        <div className="flex items-center justify-between px-4 pt-4 pb-2">
+          <div className="flex items-center gap-2"><MessageCircle size={18} style={{color:C.brassDk}}/><span style={{fontFamily:F_DISP,fontSize:16,color:C.ink,letterSpacing:1}}>Study Companion</span></div>
+          <button onClick={onClose} aria-label="Close"><X size={20} style={{color:C.inkSoft}}/></button>
+        </div>
+        <div ref={boxRef} className="flex-1 overflow-y-auto px-4 py-2 flex flex-col gap-2.5">
+          <div className="p-3 rounded-xl" style={{background:C.card,border:`1px solid ${C.line}`,fontSize:12.5,color:C.inkSoft,lineHeight:1.55}}>
+            Ask about the sites, scriptures, history, or your itinerary — I know this trip{ctx.site?` and the stop you have open (${ctx.site})`:""}. Your journal entries and photos stay private on your device and are never shared with me. I need an internet connection to answer.
+          </div>
+          {msgs.map((m,i)=>(
+            <div key={i} className={m.role==="user"?"self-end":"self-start"} style={{maxWidth:"85%"}}>
+              <div className="px-3.5 py-2.5 rounded-2xl" style={m.role==="user"
+                ?{background:C.teal,color:"#fff",fontSize:14.5,lineHeight:1.5,borderBottomRightRadius:6}
+                :{background:C.card,border:`1px solid ${C.line}`,color:C.ink,fontSize:14.5,lineHeight:1.6,borderBottomLeftRadius:6,whiteSpace:"pre-wrap"}}>{m.content}</div>
+            </div>
+          ))}
+          {busy&&<div className="self-start px-3.5 py-2.5 rounded-2xl flex items-center gap-2" style={{background:C.card,border:`1px solid ${C.line}`,color:C.inkSoft,fontSize:13}}><Loader2 size={14} className="animate-spin"/> Thinking…</div>}
+          {err&&<div className="p-2.5 rounded-lg text-xs" style={{background:"#fbeeea",color:C.clay,border:`1px solid ${C.clay}44`}}>{err}</div>}
+        </div>
+        <div className="flex items-end gap-2 px-4 pb-4 pt-2" style={{borderTop:`1px solid ${C.line}`}}>
+          <textarea value={input} onChange={(e)=>setInput(e.target.value)} onKeyDown={(e)=>{ if(e.key==="Enter"&&!e.shiftKey){ e.preventDefault(); send(); } }} rows={1} placeholder="Ask about this site, the trip, scriptures…" className="flex-1 px-3.5 py-2.5 rounded-xl resize-none" style={{background:C.card,border:`1px solid ${C.line}`,fontSize:14.5,color:C.ink,outline:"none",maxHeight:110}}/>
+          <button onClick={send} disabled={busy||!input.trim()} aria-label="Send" className="p-2.5 rounded-xl" style={{background:busy||!input.trim()?C.line:C.brass,color:"#fff"}}><Send size={17}/></button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SitePage({sid,isJer,site,date,tripName,tripSub,itinerary,getSite,visit,setVisit,customSite,setCustomSite,members,back,onReset}){
+  const [chatOpen,setChatOpen]=useState(false);
   if(!site)return(<div><button onClick={back} className="flex items-center gap-1 text-sm" style={{color:C.inkSoft}}><ChevronLeft size={16}/> Back</button><p className="mt-4" style={{color:C.inkSoft}}>This stop no longer exists.</p></div>);
   const info=isJer?SITE_INFO[sid]:null;
   const col=KIND_COLOR[site.kind];
+  const about=isJer?(info?.blurb||""):(customSite?.about||site.blurb||"");
+  const chatCtx={
+    trip:tripName, dates:tripSub, day:date||"", site:site.name,
+    about,
+    talmage:(info&&info.talmageText)?`${info.talmageRef||""}: ${info.talmageText}`:"",
+    scriptures:(info?.scriptures||[]).map((s)=>s.t+(s.why?` — ${s.why}`:"")).join("; "),
+    itinerary:(itinerary||[]).map((d)=>`${d.label||d.date||""}: ${(d.sids||[]).map((x)=>getSite&&getSite(x)?.name).filter(Boolean).join(", ")}`).join(" | "),
+  };
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
         <button onClick={back} className="flex items-center gap-1 text-sm" style={{color:C.inkSoft}}><ChevronLeft size={16}/> All stops</button>
+        <button onClick={()=>setChatOpen(true)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium" style={{background:C.teal,color:"#fff"}}><MessageCircle size={13}/> Ask</button>
         {onReset&&(<button onClick={()=>onReset()} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium" style={{background:"transparent",border:`1px solid ${C.clay}66`,color:C.clay}}><RotateCcw size={13}/> Reset Home</button>)}
       </div>
       <div className="flex items-center gap-3 mb-2">
@@ -631,6 +696,7 @@ function SitePage({sid,isJer,site,date,tripName,visit,setVisit,customSite,setCus
       {!isJer&&!site.test&&customSite&&(
         <CustomAbout sid={sid} site={customSite} setSite={setCustomSite} tripName={tripName}/>
       )}
+      <StudyChat open={chatOpen} onClose={()=>setChatOpen(false)} ctx={chatCtx}/>
     </div>
   );
 }
@@ -777,6 +843,7 @@ function ImpromptuPage({entry,setEntry,members,back,onDelete}){
     <div>
       <div className="flex items-center justify-between mb-4">
         <button onClick={back} className="flex items-center gap-1 text-sm" style={{color:C.inkSoft}}><ChevronLeft size={16}/> All stops</button>
+        <button onClick={()=>setChatOpen(true)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium" style={{background:C.teal,color:"#fff"}}><MessageCircle size={13}/> Ask</button>
         <button onClick={onDelete} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium" style={{border:`1px solid ${C.clay}66`,color:C.clay}}><Trash2 size={13}/> Delete</button>
       </div>
       <div className="flex items-center gap-2 mb-1"><span style={{fontSize:11,letterSpacing:1,color:C.olive,textTransform:"uppercase",fontWeight:600}}>Impromptu entry</span></div>
