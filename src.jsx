@@ -12,7 +12,7 @@ const C = {
   line: "#ddd2bf", brass: "#b0894a", brassDk: "#8f6e37", olive: "#6b7350",
   teal: "#2c5f61", clay: "#a9612f",
 };
-const APP_VERSION = "1.3.1";
+const APP_VERSION = "1.3.2";
 const F_DISP = "'Cinzel', 'Trajan Pro', Georgia, serif";
 const F_SERIF = "'Frank Ruhl Libre', 'Frank Ruehl', Georgia, serif";
 function Fonts(){return(<style>{`@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@400;500;700&display=swap');`}</style>);}
@@ -598,7 +598,7 @@ function SitePage({sid,isJer,site,date,tripName,visit,setVisit,customSite,setCus
       {info&&(
         <div className="flex items-center gap-2 mb-3">
           <FaithBadges faiths={info.faiths} size={17}/>
-          {info.talmage&&<a href="https://www.gutenberg.org/ebooks/22542" target="_blank" rel="noopener noreferrer" title={info.talmageRef||"Jesus the Christ — free full text"} className="px-2 py-0.5 rounded-full" style={{fontSize:10,color:"#fff",background:FAITHS.L.color,fontWeight:700,letterSpacing:0.5,textDecoration:"none"}}>TALMAGE ↗</a>}
+          {info.talmage&&<span title={info.talmageRef||"Jesus the Christ"} className="px-2 py-0.5 rounded-full" style={{fontSize:10,color:"#fff",background:FAITHS.L.color,fontWeight:700,letterSpacing:0.5}}>TALMAGE</span>}
           <a href={`https://www.google.com/maps/search/?api=1&query=${info.lat},${info.lng}`} target="_blank" rel="noopener noreferrer" className="ml-auto flex items-center gap-1 text-xs" style={{color:C.teal}}><MapPin size={12}/> Map</a>
         </div>
       )}
