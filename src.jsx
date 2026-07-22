@@ -12,7 +12,7 @@ const C = {
   line: "#ddd2bf", brass: "#b0894a", brassDk: "#8f6e37", olive: "#6b7350",
   teal: "#2c5f61", clay: "#a9612f",
 };
-const APP_VERSION = "1.6.3";
+const APP_VERSION = "1.7.1";
 const F_DISP = "'Cinzel', 'Trajan Pro', Georgia, serif";
 const F_SERIF = "'Frank Ruhl Libre', 'Frank Ruehl', Georgia, serif";
 function Fonts(){return(<style>{`@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@400;500;700&display=swap');`}</style>);}
@@ -102,6 +102,104 @@ IF ARRIVING EARLY/LATE, nearby hotels: Austrian Hospice (Old City), Jerusalem Ho
 
 const HOME_SITE = { name: "Home", kind: K.home, blurb: "A sandbox stop for trying photos, tagging, and journaling. Reset it anytime.", custom: true, test: true };
 const JER_ID = "jerusalem2026";
+
+const DIRECTORY=[
+ {id:"d_p01",name:"Teresa Anderson",phone:"(480) 612-4146",email:"teresaanderson6@gmail.com",addr:"2939 S Larkspur St, Gilbert, AZ 85295",img:"people/p01.jpg"},
+ {id:"d_p02",name:"Leslie Bangerter",phone:"(801) 598-8891",email:"lwbangerter@msn.com",addr:"2060 E Candle Tree Cv, Sandy, UT 84092",img:"people/p02.jpg"},
+ {id:"d_p03",name:"Edward (Eddie) Bangerter",phone:"(801) 598-2500",email:"elbangerter@msn.com",addr:"2060 E Candle Tree Cv, Sandy, UT 84092",img:"people/p03.jpg"},
+ {id:"d_p04",name:"Marianne Von Bracht",phone:"(517) 881-6501",email:"mariannecolleen@gmail.com",addr:"1802 W Braeden Ln, Spokane, WA 99208",img:"people/p04.jpg"},
+ {id:"d_p05",name:"Lance Von Bracht",phone:"(406) 291-9527",email:"lancevonb@gmail.com",addr:"1802 W Braeden Ln, Spokane, WA 99208",img:"people/p05.jpg"},
+ {id:"d_p06",name:"Jodi Clark",phone:"(801) 230-4014",email:"jodifrijol@hotmail.com",addr:"2768 Craig Dr, Salt Lake City, UT 84109",img:"people/p06.jpg"},
+ {id:"d_p07",name:"Marshall Clark",phone:"(801) 230-1414",email:"marshall.clark@hotmail.com",addr:"2768 Craig Dr, Salt Lake City, UT 84109",img:"people/p07.jpg"},
+ {id:"d_p08",name:"April Cobb",phone:"(703) 314-7838",email:"April.cobb@byu.net",addr:"11392 S. Open Hill Dr., South Jordan, UT 84009",img:"people/p08.jpg"},
+ {id:"d_p09",name:"Macy Cobb",phone:"(385) 506-8844",email:"macyjcobb@gmail.com",addr:"11392 S. Open Hill Dr., South Jordan, UT 84009",img:"people/p09.jpg"},
+ {id:"d_p10",name:"Ben Crouch",phone:"(801) 580-9792",email:"abencrouch@gmail.com",addr:"296 S 100 W, Jerome, ID 83338",img:"people/p10.jpg"},
+ {id:"d_p11",name:"Amy Christensen",phone:"(719) 491-5269",email:"amychristensen08@gmail.com",addr:"11417 S Harvest Rain Ave, South Jordan, UT 84009",img:"people/p11.jpg"},
+ {id:"d_p12",name:"Laura Dutson",phone:"(966) 550-1871",email:"laura.sheffield@gmail.com",addr:"P.O. Box 2878",img:"people/p12.jpg"},
+ {id:"d_p13",name:"Karen Fetzer",phone:"(801) 244-7766",email:"karen.fetzer@gmail.com",addr:"47-75 Kamehameha Hwy, Kaneohe, HI 96744",img:"people/p13.jpg"},
+ {id:"d_p14",name:"Nikki Hazlett",phone:"(435) 260-8628",email:"moabrivermom@gmail.com",addr:"485 Riversands Rd, Moab, UT 84532",img:"people/p14.jpg"},
+ {id:"d_p15",name:"Stephen Hazlett",phone:"(435) 260-8629",email:"info@worldwideriver.com",addr:"485 Riversands Rd, Moab, UT 84532",img:"people/p15.jpg"},
+ {id:"d_p16",name:"Gaye Strathearn",phone:"(801) 360-3135",email:"gaye_strathearn@byu.edu",addr:"2808 W 620 N, Provo, UT 84601",img:"people/p16.jpg"},
+ {id:"d_p17",name:"Teri Stokes",phone:"(208) 539-7152",email:"teristokesagent@gmail.com",addr:"296 S 100 W, Jerome, ID 83338",img:"people/p17.jpg"},
+ {id:"d_p18",name:"Frank Judd",phone:"(801) 319-9132",email:"frank_judd@byu.edu",addr:"303 W 220 S, Orem, UT 84058",img:"people/p18.jpg"},
+ {id:"d_p19",name:"Jill Judd",phone:"(385) 201-6026",email:"jfjudd07@gmail.com",addr:"303 W 220 S, Orem, UT 84058",img:"people/p19.jpg"},
+ {id:"d_p20",name:"Ashley Kuhni",phone:"(480) 495-0080",email:"ashley@designlydone.com",addr:"208 W Samuel Lane, Provo, UT 84604",img:"people/p20.jpg"},
+ {id:"d_p21",name:"Justin Kuhni",phone:"(480) 577-4593",email:"justin@ashtinhomes.com",addr:"208 W Samuel Lane, Provo, UT 84604",img:"people/p21.jpg"},
+ {id:"d_p22",name:"Michelle Lehnardt",phone:"(801) 635-5847",email:"michellelehnardt@gmail.com",addr:"2779 E. Craig Drive, SLC, UT 84109",img:"people/p22.jpg"},
+ {id:"d_p23",name:"Erik Lehnardt",phone:"(801) 560-2808",email:"bigdaddyerik@me.com",addr:"2779 E. Craig Drive, SLC, UT 84109",img:"people/p23.jpg"},
+ {id:"d_p24",name:"Stephanie Marshall",phone:"(202) 487-3393",email:"stephanie@mnspublicity.com",addr:"7120 Sudair, Dhahran, Saudi Arabia",img:"people/p24.jpg"},
+ {id:"d_p25",name:"Matt McQueen",phone:"(801) 641-5645",email:"mcqueenstuff@gmail.com",addr:"4166 West 11770 South, South Jordan, UT 84009",img:"people/p25.jpg"},
+ {id:"d_p26",name:"Liz McQueen",phone:"(801) 834-1612",email:"lizmcqueen4@gmail.com",addr:"4166 West 11770 South, South Jordan, UT 84009",img:"people/p26.jpg"},
+ {id:"d_p27",name:"Marianne Ormsby",phone:"(801) 836-6557",email:"mariannebyu@gmail.com",addr:"6191 W Valley View Dr, Highland, UT 84003",img:"people/p27.jpg"},
+ {id:"d_p28",name:"Brett Ormsby",phone:"(801) 836-4511",email:"bo392781@gmail.com",addr:"6191 W Valley View Dr, Highland, UT 84003",img:"people/p28.jpg"},
+ {id:"d_p29",name:"Richard Sheffield",phone:"(801) 373-4886",email:"richard.sheffield@gmail.com",addr:"1675 Oak Ln, Provo, UT 84604",img:"people/p29.jpg"},
+ {id:"d_p30",name:"Samuel Smith",phone:"(208) 206-2495",email:"smithsa@byui.edu",addr:"410 Terra Vista Drive, Rexburg, ID 83440",img:"people/p30.jpg"},
+ {id:"d_p31",name:"David Spencer",phone:"(310) 936-1814",email:"dcs287@yahoo.com",addr:"5028 Steveann Street, Torrance, CA 90503",img:"people/p31.jpg"},
+ {id:"d_p32",name:"Jennefer Tasker",phone:"(720) 933-9406",email:"taskermom@gmail.com",addr:"20406 E Sunset Ct., Queen Creek, AZ 85142",img:"people/p32.jpg"},
+ {id:"d_p33",name:"Tamara Sheffield",phone:"(801) 718-9254",email:"sheffield.tamara@gmail.com",addr:"1675 Oak Ln, Provo, UT 84604",img:"people/p33.jpg"},
+];
+const dirInfo=(m)=>DIRECTORY.find((d)=>d.id===m.id)||DIRECTORY.find((d)=>d.name.toLowerCase()===String(m.name||"").trim().toLowerCase());
+function mergeDirectory(s){
+  const members=[...(s.members||[])];
+  DIRECTORY.forEach((d)=>{
+    const m=members.find((x)=>x.id===d.id)||members.find((x)=>String(x.name||"").trim().toLowerCase()===d.name.toLowerCase());
+    if(!m) members.push({id:d.id,name:d.name,starred:false,photo:d.img});
+    else if(!m.photo) m.photo=d.img;
+  });
+  return {...s,members};
+}
+
+// ---- On-device face suggestions (face-api.js, lazy-loaded; nothing leaves the phone) ----
+let _faceReady=null;
+function loadFaceApi(){
+  if(_faceReady) return _faceReady;
+  _faceReady=(async()=>{
+    if(!window.faceapi){
+      await new Promise((res,rej)=>{const sc=document.createElement("script");sc.src="faceapi.js";sc.onload=res;sc.onerror=()=>rej(new Error("no faceapi"));document.head.appendChild(sc);});
+    }
+    const f=window.faceapi;
+    await Promise.all([
+      f.nets.tinyFaceDetector.loadFromUri("models"),
+      f.nets.faceLandmark68Net.loadFromUri("models"),
+      f.nets.faceRecognitionNet.loadFromUri("models"),
+    ]);
+    return f;
+  })();
+  _faceReady.catch(()=>{_faceReady=null;});
+  return _faceReady;
+}
+function faceImg(src){return new Promise((res,rej)=>{const im=new Image();im.onload=()=>res(im);im.onerror=()=>rej(new Error("img"));im.src=src;});}
+const _refCache={};
+async function refDescriptor(f,m){
+  const fp=String(m.photo).length+":"+String(m.photo).slice(0,48);
+  if(_refCache[m.id]&&_refCache[m.id].fp===fp) return _refCache[m.id].d;
+  const stored=await idbGet("faceRef:"+m.id);
+  if(stored&&stored.fp===fp){const d=new Float32Array(stored.d);_refCache[m.id]={fp,d};return d;}
+  try{
+    const im=await faceImg(m.photo);
+    const det=await f.detectSingleFace(im,new f.TinyFaceDetectorOptions({inputSize:320,scoreThreshold:0.35})).withFaceLandmarks().withFaceDescriptor();
+    if(!det){_refCache[m.id]={fp,d:null};return null;}
+    const d=det.descriptor;
+    _refCache[m.id]={fp,d};idbSet("faceRef:"+m.id,{fp,d:Array.from(d)});
+    return d;
+  }catch(e){return null;}
+}
+async function suggestFaces(dataUrl,members){
+  const f=await loadFaceApi();
+  const refs=[];
+  for(const m of members){if(!m.photo)continue;const d=await refDescriptor(f,m);if(d)refs.push({id:m.id,d});}
+  if(!refs.length)return [];
+  const im=await faceImg(dataUrl);
+  const dets=await f.detectAllFaces(im,new f.TinyFaceDetectorOptions({inputSize:512,scoreThreshold:0.45})).withFaceLandmarks().withFaceDescriptors();
+  const out=new Set();
+  for(const det of dets){
+    let best=null,bd=0.55;
+    for(const r of refs){const dist=f.euclideanDistance(det.descriptor,r.d);if(dist<bd){bd=dist;best=r.id;}}
+    if(best)out.add(best);
+  }
+  return [...out];
+}
+
 const JER_META = { id: JER_ID, name: "In the Steps of the Master", sub: "BYU Jerusalem Alumni Tour · August 2–13, 2026", builtin: true };
 const JER_MEMBERS = [
   { id: "m1", name: "Marshall Clark", starred: true, photo: null },
@@ -214,6 +312,7 @@ export default function App(){
     if(!s) s=emptyTripState();
     s=migrateTripState(s);
     if(id===JER_ID) s=mergeBackbone(s);
+    if(id===JER_ID) s=mergeDirectory(s);
     setTrip(s); setHydrated(true); window.scrollTo(0,0);
   }
   function closeTrip(){ setTripId(null); setTrip(null); setView("home"); }
@@ -301,7 +400,7 @@ function Landing({trips,onOpen,onCreate,onDelete}){
       ):(
         <button onClick={()=>setAdding(true)} className="mt-4 w-full py-3 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2" style={{border:`1.5px dashed ${C.brass}`,color:C.brassDk,background:"transparent"}}><Plus size={16}/> New trip</button>
       )}
-      <div style={{textAlign:"center",marginTop:28,fontSize:11,color:C.inkSoft,opacity:0.7}}>In the Steps of the Master · v{APP_VERSION}</div>
+      <div style={{textAlign:"center",marginTop:28,fontSize:11,color:C.inkSoft,opacity:0.7}}>A personal study &amp; journaling assistant · v{APP_VERSION}</div>
     </div>
   );
 }
@@ -312,10 +411,8 @@ function TopBar({meta,view,setView,saveState,onTrips}){
     <div style={{borderBottom:`1px solid ${C.line}`,background:C.card}} className="sticky top-0 z-10">
       <div className="max-w-3xl mx-auto px-4 py-2.5 flex items-center justify-between">
         <div className="flex items-center gap-2 min-w-0">
-          {view==="home"&&<button onClick={onTrips} title="All trips" className="flex items-center gap-1 shrink-0" style={{color:C.inkSoft,fontSize:12}}><ChevronLeft size={15}/><Compass size={16}/></button>}
-          {view==="home"
-            ? <button onClick={()=>setView("home")} className="min-w-0 text-left"><div style={{fontFamily:F_SERIF,fontSize:15.5,fontWeight:700,color:C.ink}} className="truncate">{meta.name}</div></button>
-            : <div style={{fontFamily:F_SERIF,fontSize:15.5,fontWeight:700,color:C.ink}} className="truncate min-w-0">{meta.name}</div>}
+          <button onClick={()=>{if(view==="home")onTrips();else setView("home");}} className="flex items-center gap-0.5 shrink-0 py-1 pr-1" style={{color:C.inkSoft,fontSize:13,fontWeight:500}}><ChevronLeft size={16}/> Back</button>
+          <div style={{fontFamily:F_SERIF,fontSize:15.5,fontWeight:700,color:C.ink}} className="truncate min-w-0">{meta.name}</div>
         </div>
         <div className="flex items-center gap-1 shrink-0">
           {saveState==="saved"&&<span title="All changes saved on this device" style={{fontSize:10,color:C.olive,marginRight:4}} className="hidden sm:inline">Saved</span>}
@@ -334,8 +431,8 @@ function Home({meta,isJer,trip,patch,getSite,openSite,onEditItinerary,openImp,ad
       {onAsk&&<button onClick={onAsk} className="fixed bottom-24 right-4 z-40 flex items-center gap-1.5 px-4 py-2.5 rounded-full shadow-lg" style={{background:C.teal,color:"#fff",fontSize:13,fontWeight:600}}><MessageCircle size={15}/> Ask</button>}
       {isJer&&onPrep&&(
         <button onClick={onPrep} className="w-full flex items-center justify-between px-4 py-3.5 rounded-2xl mb-4" style={{background:C.card,border:`1px solid ${C.line}`}}>
-          <span className="flex items-center gap-2.5"><BookOpen size={17} style={{color:C.brassDk}}/><span style={{fontFamily:F_SERIF,fontSize:15.5,fontWeight:700,color:C.ink}}>Trip Prep & Need-to-Know</span></span>
-          <span style={{fontSize:12,color:C.inkSoft}}>Study · dress code · packing</span>
+          <span className="flex items-center gap-2.5"><BookOpen size={17} style={{color:C.brassDk}}/><span style={{fontFamily:F_SERIF,fontSize:15.5,fontWeight:700,color:C.ink}}>Directory &amp; Trip Reference</span></span>
+          <span style={{fontSize:12,color:C.inkSoft}}>Contacts · study · dress code</span>
         </button>
       )}
       <header className="pt-2 pb-4">
@@ -635,10 +732,27 @@ function PrepPage({back}){
   return (
     <div>
       <button onClick={back} className="flex items-center gap-1 text-sm mb-4" style={{color:C.inkSoft}}><ChevronLeft size={16}/> Back</button>
-      <h1 style={{fontFamily:F_DISP,fontSize:22,color:C.ink,letterSpacing:1,marginBottom:4}}>Trip Prep & Need-to-Know</h1>
+      <h1 style={{fontFamily:F_DISP,fontSize:22,color:C.ink,letterSpacing:1,marginBottom:4}}>Directory &amp; Trip Reference</h1>
       <p style={{fontSize:13.5,color:C.inkSoft,lineHeight:1.6,marginBottom:16}}>Study before you go, and the practical details for while you're there. The Study Companion (Ask button) knows all of this too.</p>
 
-      <PrepSection title="Things to Read, Listen to & Watch" defaultOpen>
+      <PrepSection title="Group Directory" defaultOpen>
+        <p style={{fontSize:13,color:C.inkSoft,marginBottom:10}}>Everyone traveling in August. Tap a phone or email to reach them. The Group tab shows the same people for photo tagging.</p>
+        <div className="flex flex-col gap-2.5">
+          {DIRECTORY.map((d)=>(
+            <div key={d.id} className="flex items-start gap-3 p-2.5 rounded-xl" style={{background:C.stone,border:`1px solid ${C.line}`}}>
+              <img src={d.img} alt="" style={{width:52,height:52,borderRadius:10,objectFit:"cover",flexShrink:0}}/>
+              <div style={{minWidth:0}}>
+                <div style={{fontSize:14.5,fontWeight:700,color:C.ink}}>{d.name}</div>
+                <a href={`tel:${d.phone.replace(/[^+\d]/g,"")}`} style={{fontSize:12.5,color:C.teal,display:"block",marginTop:1}}>{d.phone}</a>
+                <a href={`mailto:${d.email}`} style={{fontSize:12.5,color:C.teal,display:"block",overflowWrap:"anywhere"}}>{d.email}</a>
+                <div style={{fontSize:12,color:C.inkSoft,marginTop:1}}>{d.addr}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </PrepSection>
+
+      <PrepSection title="Things to Read, Listen to & Watch">
         <p style={{fontSize:13,color:C.inkSoft,marginBottom:8}}>Understanding the land, people, and history before arriving will make everything more meaningful.</p>
         <PH>Read</PH>
         <p><b>The Scriptures</b> — most sites center on the life of Christ in the Gospels, with several Old Testament sites too. Use the itinerary to study each site's biblical significance (each stop in this app lists its passages with context).</p>
@@ -893,6 +1007,11 @@ function VisitPanel({visit,setVisit,members,isTest,siteName}){
     setPhotos([...visit.photos,...added]);
     // fire-and-forget AI caption drafts; never blocks, never overwrites a user's edit
     added.forEach((ph)=>{
+      // on-device face suggestions (best-effort; falls back to starred members)
+      suggestFaces(ph.dataUrl,sorted).then((ids)=>{
+        if(!ids||!ids.length) return;
+        setVisitRef.current((v)=>({...v,photos:v.photos.map((p)=>p.id===ph.id?{...p,suggested:ids}:p)}));
+      }).catch(()=>{});
       fetch("/.netlify/functions/caption",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({data:ph.dataUrl.split(",")[1],context:siteName||""})})
         .then((r)=>r.ok?r.json():null)
         .then((d)=>{const cap=(d&&d.text||"").trim();
@@ -988,22 +1107,31 @@ function Roster({members,setMembers}){
   return (
     <div>
       <h1 style={{fontFamily:F_DISP,fontSize:24,letterSpacing:1,color:C.ink}}>Travel Group</h1>
-      <p style={{color:C.inkSoft,fontSize:14,marginTop:6,marginBottom:18}}>Add a face photo for each person — those become the tag candidates. Star the people you tag most to keep them at the top.</p>
+      <p style={{color:C.inkSoft,fontSize:14,marginTop:6,marginBottom:18}}>The official trip directory, ready for tagging. Each face photo powers the automatic tag suggestions on journal photos. Star the people you tag most, and add anyone extra below.</p>
       <div className="flex gap-2 mb-5">
         <input value={name} onChange={(e)=>setName(e.target.value)} onKeyDown={(e)=>e.key==="Enter"&&add()} placeholder="Add a group member" className="flex-1 p-2.5 rounded-xl text-sm" style={{background:C.card,border:`1px solid ${C.line}`,color:C.ink,outline:"none"}}/>
         <button onClick={add} className="px-4 rounded-xl flex items-center gap-1.5 text-sm font-medium" style={{background:C.ink,color:C.stone}}><Plus size={16}/> Add</button>
       </div>
       <div className="flex flex-col gap-2">
-        {sorted.map((m)=>(
-          <div key={m.id} className="flex items-center gap-3 p-3 rounded-xl" style={{background:C.card,border:`1px solid ${C.line}`}}>
-            <button onClick={()=>toggle(m.id)}><Star size={18} style={{color:m.starred?C.brass:C.line,fill:m.starred?C.brass:"transparent"}}/></button>
-            <Avatar member={m} size={34}/>
-            <span style={{flex:1,fontSize:15,color:C.ink}}>{m.name}</span>
-            <button onClick={()=>photoInputs.current[m.id]?.click()} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs" style={{border:`1px solid ${C.line}`,color:C.inkSoft}}><UserPlus size={13}/> {m.photo?"Change":"Photo"}</button>
+        {sorted.map((m)=>{const info=dirInfo(m);return(
+          <div key={m.id} className="flex items-start gap-3 p-3 rounded-xl" style={{background:C.card,border:`1px solid ${C.line}`}}>
+            <button onClick={()=>toggle(m.id)} className="mt-2"><Star size={18} style={{color:m.starred?C.brass:C.line,fill:m.starred?C.brass:"transparent"}}/></button>
+            <div className="mt-0.5"><Avatar member={m} size={44}/></div>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{fontSize:15,fontWeight:600,color:C.ink}}>{m.name}</div>
+              {info&&(<div style={{marginTop:1}}>
+                <a href={`tel:${info.phone.replace(/[^+\d]/g,"")}`} style={{fontSize:12.5,color:C.teal,display:"block"}}>{info.phone}</a>
+                <a href={`mailto:${info.email}`} style={{fontSize:12.5,color:C.teal,display:"block",overflowWrap:"anywhere"}}>{info.email}</a>
+                <div style={{fontSize:12,color:C.inkSoft}}>{info.addr}</div>
+              </div>)}
+              <div className="flex items-center gap-2 mt-1.5">
+                <button onClick={()=>photoInputs.current[m.id]?.click()} className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs" style={{border:`1px solid ${C.line}`,color:C.inkSoft}}><UserPlus size={13}/> {m.photo?"Change photo":"Photo"}</button>
+                {!info&&<button onClick={()=>remove(m.id)} className="flex items-center gap-1 px-2 py-1 rounded-full text-xs" style={{color:C.inkSoft}}><X size={13}/> Remove</button>}
+              </div>
+            </div>
             <input ref={(el)=>(photoInputs.current[m.id]=el)} type="file" accept="image/*" hidden onChange={(e)=>{const f=e.target.files[0];if(f)setPhoto(m.id,f);e.target.value="";}}/>
-            <button onClick={()=>remove(m.id)}><X size={16} style={{color:C.inkSoft}}/></button>
           </div>
-        ))}
+        );})}
       </div>
     </div>
   );
