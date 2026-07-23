@@ -12,7 +12,7 @@ const C = {
   line: "#ddd2bf", brass: "#b0894a", brassDk: "#8f6e37", olive: "#6b7350",
   teal: "#2c5f61", clay: "#a9612f",
 };
-const APP_VERSION = "1.7.1";
+const APP_VERSION = "1.7.4";
 const F_DISP = "'Cinzel', 'Trajan Pro', Georgia, serif";
 const F_SERIF = "'Frank Ruhl Libre', 'Frank Ruehl', Georgia, serif";
 function Fonts(){return(<style>{`@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@400;500;700&display=swap');`}</style>);}
@@ -171,7 +171,8 @@ function loadFaceApi(){
 function faceImg(src){return new Promise((res,rej)=>{const im=new Image();im.onload=()=>res(im);im.onerror=()=>rej(new Error("img"));im.src=src;});}
 const _refCache={};
 async function refDescriptor(f,m){
-  const fp=String(m.photo).length+":"+String(m.photo).slice(0,48);
+  const raw=String(m.photo);
+  const fp=(raw.startsWith("data:")?"":APP_VERSION+":")+raw.length+":"+raw.slice(0,48);
   if(_refCache[m.id]&&_refCache[m.id].fp===fp) return _refCache[m.id].d;
   const stored=await idbGet("faceRef:"+m.id);
   if(stored&&stored.fp===fp){const d=new Float32Array(stored.d);_refCache[m.id]={fp,d};return d;}
@@ -431,8 +432,8 @@ function Home({meta,isJer,trip,patch,getSite,openSite,onEditItinerary,openImp,ad
       {onAsk&&<button onClick={onAsk} className="fixed bottom-24 right-4 z-40 flex items-center gap-1.5 px-4 py-2.5 rounded-full shadow-lg" style={{background:C.teal,color:"#fff",fontSize:13,fontWeight:600}}><MessageCircle size={15}/> Ask</button>}
       {isJer&&onPrep&&(
         <button onClick={onPrep} className="w-full flex items-center justify-between px-4 py-3.5 rounded-2xl mb-4" style={{background:C.card,border:`1px solid ${C.line}`}}>
-          <span className="flex items-center gap-2.5"><BookOpen size={17} style={{color:C.brassDk}}/><span style={{fontFamily:F_SERIF,fontSize:15.5,fontWeight:700,color:C.ink}}>Directory &amp; Trip Reference</span></span>
-          <span style={{fontSize:12,color:C.inkSoft}}>Contacts · study · dress code</span>
+          <span className="flex items-center gap-2.5"><BookOpen size={17} style={{color:C.brassDk}}/><span style={{fontFamily:F_SERIF,fontSize:15.5,fontWeight:700,color:C.ink}}>Trip References</span></span>
+          <span style={{fontSize:12,color:C.inkSoft}}>Things to Read · Good to Know</span>
         </button>
       )}
       <header className="pt-2 pb-4">
@@ -732,27 +733,10 @@ function PrepPage({back}){
   return (
     <div>
       <button onClick={back} className="flex items-center gap-1 text-sm mb-4" style={{color:C.inkSoft}}><ChevronLeft size={16}/> Back</button>
-      <h1 style={{fontFamily:F_DISP,fontSize:22,color:C.ink,letterSpacing:1,marginBottom:4}}>Directory &amp; Trip Reference</h1>
+      <h1 style={{fontFamily:F_DISP,fontSize:22,color:C.ink,letterSpacing:1,marginBottom:4}}>Trip References</h1>
       <p style={{fontSize:13.5,color:C.inkSoft,lineHeight:1.6,marginBottom:16}}>Study before you go, and the practical details for while you're there. The Study Companion (Ask button) knows all of this too.</p>
 
-      <PrepSection title="Group Directory" defaultOpen>
-        <p style={{fontSize:13,color:C.inkSoft,marginBottom:10}}>Everyone traveling in August. Tap a phone or email to reach them. The Group tab shows the same people for photo tagging.</p>
-        <div className="flex flex-col gap-2.5">
-          {DIRECTORY.map((d)=>(
-            <div key={d.id} className="flex items-start gap-3 p-2.5 rounded-xl" style={{background:C.stone,border:`1px solid ${C.line}`}}>
-              <img src={d.img} alt="" style={{width:52,height:52,borderRadius:10,objectFit:"cover",flexShrink:0}}/>
-              <div style={{minWidth:0}}>
-                <div style={{fontSize:14.5,fontWeight:700,color:C.ink}}>{d.name}</div>
-                <a href={`tel:${d.phone.replace(/[^+\d]/g,"")}`} style={{fontSize:12.5,color:C.teal,display:"block",marginTop:1}}>{d.phone}</a>
-                <a href={`mailto:${d.email}`} style={{fontSize:12.5,color:C.teal,display:"block",overflowWrap:"anywhere"}}>{d.email}</a>
-                <div style={{fontSize:12,color:C.inkSoft,marginTop:1}}>{d.addr}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </PrepSection>
-
-      <PrepSection title="Things to Read, Listen to & Watch">
+      <PrepSection title="Things to Read, Listen to & Watch" defaultOpen>
         <p style={{fontSize:13,color:C.inkSoft,marginBottom:8}}>Understanding the land, people, and history before arriving will make everything more meaningful.</p>
         <PH>Read</PH>
         <p><b>The Scriptures</b> — most sites center on the life of Christ in the Gospels, with several Old Testament sites too. Use the itinerary to study each site's biblical significance (each stop in this app lists its passages with context).</p>
@@ -1099,6 +1083,8 @@ function ImpromptuPage({entry,setEntry,members,back,onDelete}){
 
 function Roster({members,setMembers}){
   const [name,setName]=useState("");const photoInputs=useRef({});
+  const [zoom,setZoom]=useState(null);
+  const zoomSrc=(m)=>{const info=dirInfo(m);return info&&m.photo===info.img?info.img.replace(".jpg","_full.jpg"):m.photo;};
   const sorted=sortMembers(members);
   const add=()=>{if(!name.trim())return;setMembers([...members,{id:uid(),name:name.trim(),starred:false,photo:null}]);setName("");};
   const toggle=(id)=>setMembers(members.map((m)=>(m.id===id?{...m,starred:!m.starred}:m)));
@@ -1116,7 +1102,7 @@ function Roster({members,setMembers}){
         {sorted.map((m)=>{const info=dirInfo(m);return(
           <div key={m.id} className="flex items-start gap-3 p-3 rounded-xl" style={{background:C.card,border:`1px solid ${C.line}`}}>
             <button onClick={()=>toggle(m.id)} className="mt-2"><Star size={18} style={{color:m.starred?C.brass:C.line,fill:m.starred?C.brass:"transparent"}}/></button>
-            <div className="mt-0.5"><Avatar member={m} size={44}/></div>
+            <button className="mt-0.5" onClick={()=>{if(m.photo)setZoom(m);}}><Avatar member={m} size={44}/></button>
             <div style={{flex:1,minWidth:0}}>
               <div style={{fontSize:15,fontWeight:600,color:C.ink}}>{m.name}</div>
               {info&&(<div style={{marginTop:1}}>
@@ -1133,6 +1119,15 @@ function Roster({members,setMembers}){
           </div>
         );})}
       </div>
+      {zoom&&(
+        <div onClick={()=>setZoom(null)} className="fixed inset-0 z-50 flex items-center justify-center p-6" style={{background:"rgba(20,16,10,0.78)"}}>
+          <div className="text-center">
+            <img src={zoomSrc(zoom)} alt={zoom.name} style={{maxWidth:"88vw",maxHeight:"70vh",borderRadius:14,boxShadow:"0 8px 40px rgba(0,0,0,.5)"}}/>
+            <div style={{color:"#fff",marginTop:10,fontSize:15,fontWeight:600}}>{zoom.name}</div>
+            <div style={{color:"rgba(255,255,255,.75)",fontSize:12,marginTop:2}}>Tap anywhere to close</div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
