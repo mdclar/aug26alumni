@@ -12,7 +12,7 @@ const C = {
   line: "#ddd2bf", brass: "#b0894a", brassDk: "#8f6e37", olive: "#6b7350",
   teal: "#2c5f61", clay: "#a9612f",
 };
-const APP_VERSION = "1.7.4";
+const APP_VERSION = "1.7.5";
 const F_DISP = "'Cinzel', 'Trajan Pro', Georgia, serif";
 const F_SERIF = "'Frank Ruhl Libre', 'Frank Ruehl', Georgia, serif";
 function Fonts(){return(<style>{`@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@400;500;700&display=swap');`}</style>);}
@@ -1084,7 +1084,7 @@ function ImpromptuPage({entry,setEntry,members,back,onDelete}){
 function Roster({members,setMembers}){
   const [name,setName]=useState("");const photoInputs=useRef({});
   const [zoom,setZoom]=useState(null);
-  const zoomSrc=(m)=>{const info=dirInfo(m);return info&&m.photo===info.img?info.img.replace(".jpg","_full.jpg"):m.photo;};
+  const zoomSrc=(m)=>m.photo;
   const sorted=sortMembers(members);
   const add=()=>{if(!name.trim())return;setMembers([...members,{id:uid(),name:name.trim(),starred:false,photo:null}]);setName("");};
   const toggle=(id)=>setMembers(members.map((m)=>(m.id===id?{...m,starred:!m.starred}:m)));
