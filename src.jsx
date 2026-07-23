@@ -12,7 +12,7 @@ const C = {
   line: "#ddd2bf", brass: "#b0894a", brassDk: "#8f6e37", olive: "#6b7350",
   teal: "#2c5f61", clay: "#a9612f",
 };
-const APP_VERSION = "1.7.6";
+const APP_VERSION = "1.8.0";
 const F_DISP = "'Cinzel', 'Trajan Pro', Georgia, serif";
 const F_SERIF = "'Frank Ruhl Libre', 'Frank Ruehl', Georgia, serif";
 function Fonts(){return(<style>{`@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@400;500;700&display=swap');`}</style>);}
@@ -147,6 +147,18 @@ function mergeDirectory(s){
     else if(!m.photo) m.photo=d.img;
   });
   return {...s,members};
+}
+
+
+const SHOPDINE_FACTS=`SHOPPING GUIDE: Card machines offering shekels-or-USD: ALWAYS choose shekels (bad USD rate). Omar's / Shaban Amar (Ali Baba Souvenir Shop), Christian Quarter 14: BYU Jerusalem shirts $7-15, skirts $11, oil vials $4, scarves $6, BYU mugs $5, Hebrew CTR rings $65-75, olive wood, Roman glass jewelry, mosaics ($1,250+; his mosaic tile store is across the lane). Fixed honest prices, no bargaining, exchanges money, trusted friend of the JC since the early 80s; ask Omar where to buy anything he doesn't carry, including leather sandals. Garden Tomb gift shop (Conrad Schick St, outside Damascus Gate): books/Bibles, olive wood ₪20-100, jewelry ₪50-300+, nativities ₪100-500+; Mon-Fri 8:30-12 & 2-5:30, Sat 9-1, closed Sun. ANTIQUITIES (genuine pieces $100 into thousands, come with authentication certificates; reputable dealers advise on export and ship affordably; beware cheap fakes in unrecommended shops and the coin sellers near Gethsemane): Yasser Barakat, 146-149 Suq Aftemos, Muristan, by the fountain near the Lutheran bell tower (watercolors, pottery, maps, old photography; favorite of Church leaders and BYU professors); Lions Gate Antiquities, ask for Harrod, just inside Lion's Gate by the 1st station (ancient coins, half-shekels, widow's mites, oil lamps); Zak Shop 24, a couple doors from Omar's (great historical storytelling, good widow's-mite prices; replica oil lamps and olive wood across the lane). OLIVE WOOD: Jimmy's Bazaar, 9 A-Zahra St outside the Old City (trusted by LDS visitors for decades, honest pricing; small items ₪20-200, medium ₪120-500, nativities ₪180-6,000+; takes cards) and the Bethlehem olive wood store the group is guided to (honest Christian owner who explains why lighter Spanish wood costs less; similar range, often cheaper; takes cards). Strategy: price at Jimmy's first, buy favorites in Bethlehem, return to Jimmy's for the rest; solo shoppers get better prices than big groups; shops are struggling so respectful negotiating is fine. OLIVE OIL to consecrate: Gethsemane gift shop on the Mount of Olives, bottles ₪35-180 ($12-60); bring shekels (cards uncertain). JEWELRY: Rami's Ring Shop, Umbrella Street (Yoel Moshe Salomon St), Nahalat Shiva: handcrafted sterling silver rings/necklaces/bracelets ₪150-500; one-of-a-kind pieces kept in back. OILS & FRAGRANCES: small stall near Lazarus' Tomb in Bethany (CASH ONLY, may not be present): frankincense/myrrh/spikenard/rose-of-Sharon oils ₪35-90, resin "tears" ₪20-70, mustard seeds ₪10-25; a small frankincense+myrrh set with resins and seeds is a favorite gift. Magdala gift shop: "Woman Touching the Hem" artwork rolled for travel, prints ₪200-400, jewelry, oils; takes cards. Qumran visitor center: replica scrolls and coins, biblical archaeology books, Dead Sea skincare, magnets ₪10-25. TREATS (pay cash): Magnum bars ₪10-13 at supermarkets (up to ₪22 tourist areas); bottled sodas ₪6-15, cheapest at the supermarket down the street from the JC (stock your room before heading in); Elite milk chocolate with popping candy ₪6-10, widely available, great carry-on gift for kids/grandkids.
+DINING: OLD CITY: best falafel = the stand just inside Damascus Gate, down the steps before the street splits (~$12-15 with drink; crispy, never dry, outstanding sauce). Basti Restaurant, Via Dolorosa (OPEN SHABBAT): shawarma, kebabs, pizza; famous frozen mint limeade; ₪30-75. Abu Kamel / Ramzi, 30 Shuk Avtimus near Holy Sepulchre (OPEN SHABBAT): family-run since 1935, hummus with warm pine nuts among the city's best, ₪25-60; ask Omar to point the way or record him telling the restaurant what to prepare. Al Baghdadi, 19-21 Antonia St (OPEN SHABBAT): Iraqi kebabs ₪45-70, hummus ₪20-30. Zalatimo Sweets, Khan al-Zeit near 9th station: mutabak (flaky goat-cheese pastry, powdered sugar) ₪20-30. Jaffar Sweets, Khan al-Zeit: kanafeh ₪18-30, baklava ₪8-20. DAMASCUS GATE / EAST JERUSALEM: King of Shawarma just outside the gate on Sultan Suleiman St: chicken shawarma sandwich ₪25-40, plate ₪45-65 (gritty area, great food). Al Shu'ala Grill, 8 Salah ad-Din St: top shawarma, fantastic fries, ₪25-65. Rosemary Cafe, 5 Ibn Battuta St near Jimmy's Bazaar (OPEN SHABBAT): burgers, pizza, pasta, great shakes; American-style break; perfect after the Garden Tomb; entrees ₪45-80. JAFFA GATE: shawarma cafe across from David's Citadel, sign reads "Falafel Kabab Shawarma Cafe" (CLOSED Shabbat): group favorite meat-and-hummus plates with warm pita. MAMILLA MALL: Golda Gelato: pistachio, salted caramel, Cookieman; scoop ₪19-22; ask for samples; best in the evening strolling toward Jaffa Gate. NEAR THE JC: City View, Rehov Binyamin Mazar, 5-min walk from the Jerusalem Center (OPEN SHABBAT, opens 12pm — the group's favorite Shabbat spot): mixed grill, shawarma, pizza, panoramic Old City views, ask for the terrace; entrees ₪50-120. MACHANE YEHUDA MARKET: Azura, 4 Ha-Eshkol St (azura minced meat over mashed potatoes, sofrito, oxtail stew, moussaka; ₪65-110); Jachnun Bar, 30 HaEgoz St (malawach flaky Yemenite flatbread, slow-baked jachnun, with grated tomato, egg, zhug; ₪35-55); Aricha Sabich, 83 Agripas St (famous fried-eggplant sabich sandwich with amba; ₪30-45); Marzipan Bakery, 44 Agripas St (warm chocolate rogelach ₪8-15, box ₪45-80); boureka stand at Agripas & HaEgoz corner (cheese/potato/spinach bourekas ₪15-30); Khachapuri, 5 Ha-Shikma St (Georgian cheese-boat bread with egg and butter ₪40-70); Halva Kingdom inside the market (sesame/pistachio/chocolate halva by weight ₪20-80, tahini ₪25-50; sample before buying, great to take home). Recommended half-mile food-tour route: Aricha Sabich → Marzipan → Azura → bourekas → Khachapuri → Halva Kingdom.`;
+let _chatFacts=null;
+function getChatFacts(){
+  if(_chatFacts) return _chatFacts;
+  const dir="GROUP DIRECTORY (33 travelers): "+DIRECTORY.map((d)=>`${d.name} — ${d.phone}, ${d.email}, ${d.addr}`).join("; ")+".";
+  const idx="TRIP SITES INDEX (ask about any; full details are on each site's page): "+Object.values(SITE_INFO).map((x)=>`${x.name}: ${x.blurb}`).join(" | ");
+  _chatFacts=TRIP_FACTS+"\n"+SHOPDINE_FACTS+"\n"+dir+"\n"+idx;
+  return _chatFacts;
 }
 
 // ---- On-device face suggestions (face-api.js, lazy-loaded; nothing leaves the phone) ----
@@ -350,7 +362,7 @@ export default function App(){
       <TopBar meta={meta} view={view} setView={setView} saveState={saveState} onTrips={closeTrip}/>
       <div className="max-w-3xl mx-auto px-4 pb-24 pt-4">
         {view==="home"&&(<Home meta={meta} isJer={isJer} trip={trip} patch={patch} getSite={getSite} openSite={openSite} onEditItinerary={()=>setView("itinerary")} openImp={openImp} addImp={addImp} onAsk={()=>setHomeChat(true)} onPrep={()=>setView("prep")}/>)}
-        <StudyChat open={homeChat} onClose={()=>setHomeChat(false)} ctx={{facts:isJer?TRIP_FACTS:"",trip:meta.name,dates:meta.sub||"",day:"",site:"",about:"",talmage:"",scriptures:"",itinerary:(trip.itinerary||[]).map((d)=>`${d.label||d.date||""}: ${(d.sids||[]).map((x)=>getSite(x)?.name).filter(Boolean).join(", ")}`).join(" | ")}}/>
+        <StudyChat open={homeChat} onClose={()=>setHomeChat(false)} ctx={{facts:isJer?getChatFacts():"",trip:meta.name,dates:meta.sub||"",day:"",site:"",about:"",talmage:"",scriptures:"",itinerary:(trip.itinerary||[]).map((d)=>`${d.label||d.date||""}: ${(d.sids||[]).map((x)=>getSite(x)?.name).filter(Boolean).join(", ")}`).join(" | ")}}/>
         {view==="site"&&(<SitePage sid={activeSite} isJer={isJer} site={getSite(activeSite)} date={dateForSite(activeSite)} tripName={meta.name} tripSub={meta.sub||""} itinerary={trip.itinerary} getSite={getSite}
           visit={trip.journal[activeSite]||{text:"",photos:[],locked:false}} setVisit={(e)=>patch({journal:{...trip.journal,[activeSite]:e}})}
           customSite={trip.customSites[activeSite]} setCustomSite={(cs)=>patch({customSites:{...trip.customSites,[activeSite]:cs}})}
@@ -433,7 +445,7 @@ function Home({meta,isJer,trip,patch,getSite,openSite,onEditItinerary,openImp,ad
       {isJer&&onPrep&&(
         <button onClick={onPrep} className="w-full flex items-center justify-between px-4 py-3.5 rounded-2xl mb-4" style={{background:C.card,border:`1px solid ${C.line}`}}>
           <span className="flex items-center gap-2.5"><BookOpen size={17} style={{color:C.brassDk}}/><span style={{fontFamily:F_SERIF,fontSize:15.5,fontWeight:700,color:C.ink}}>Trip References</span></span>
-          <span style={{fontSize:12,color:C.inkSoft}}>Things to Read · Good to Know</span>
+          <span style={{fontSize:12,color:C.inkSoft}}>Things to Read · Good to Know · Shop/Dine Guide</span>
         </button>
       )}
       <header className="pt-2 pb-4">
@@ -774,6 +786,65 @@ function PrepPage({back}){
         <p>Free washers/dryers with soap at the Center — bring dryer sheets. No package deliveries accepted at the Center; ship purchases home.</p>
       </PrepSection>
 
+      <PrepSection title="Shopping & Dining Guide">
+        <p style={{fontSize:13,color:C.brassDk,fontWeight:600}}>Card tip: when a card machine offers shekels or USD, always choose shekels — the USD conversion rate is bad.</p>
+
+        <PH>Gift Shops — Old City</PH>
+        <p><b>Shaban Amar / Omar’s (Ali Baba Souvenir Shop)</b> — Christian Quarter 14. The JC-student favorite for decades: custom BYU Jerusalem shirts ($7–15), skirts ($11), olive wood, oil vials ($4), scarves ($6), Hebrew CTR rings ($65–75), Roman glass jewelry, mosaics ($1,250+; his mosaic tile store is directly across). Fixed prices, no bargaining; Omar is honest, will exchange money, and will point you to the best shop for anything he doesn’t carry — including <b>leather sandals</b>: just ask Omar.</p>
+        <p><b>Garden Tomb Gift Shop</b> — Conrad Schick St, outside Damascus Gate. Books, Bibles, olive wood (₪20–100), jewelry (₪50–300+), nativities (₪100–500+). Mon–Fri 8:30–12 &amp; 2–5:30, Sat 9–1, closed Sun.</p>
+
+        <PH>Antiquities</PH>
+        <p>Wandering the antique shops is like touring miniature museums — coins, oil lamps, Roman glass, manuscripts. Genuine pieces are $100 into the thousands, come with authentication certificates, and reputable dealers handle export paperwork and ship affordably. Be wary of cheap “antiquities” in unrecommended shops.</p>
+        <p><b>Yasser Barakat</b> — 146–149 Suq Aftemos, Muristan (walk toward the Muristan Fountain near the Lutheran bell tower). Watercolors, pottery, maps, old photography. A favorite of Church leaders and BYU professors.</p>
+        <p><b>Lions Gate Antiquities (ask for Harrod)</b> — left side just inside Lion’s Gate, by the first station of the cross. Coins (half-shekels, widow’s mites, Roman), pottery, oil lamps.</p>
+        <p><b>Zak Shop 24</b> — a couple doors from Omar’s. Wonderful storyteller; good widow’s-mite prices. His shop across the lane has replica oil lamps (more variety than Omar’s) and olive wood.</p>
+
+        <PH>Olive Wood</PH>
+        <p><b>Jimmy’s Bazaar</b> — 9 A-Zahra St, outside the Old City. Trusted for decades by LDS visitors; honest pricing, excellent quality. Small items ₪20–200, medium ₪120–500, nativities ₪180 to ₪6,000+ for museum quality. Takes cards.</p>
+        <p><b>Bethlehem olive wood store</b> (you’ll be guided there) — honest, charming Christian owner who explains why lighter Spanish wood costs less. Similar range, often slightly cheaper. Takes cards.</p>
+        <p style={{fontSize:13,color:C.inkSoft}}>Strategy: browse Jimmy’s first for pricing, buy what you love in Bethlehem, then return to Jimmy’s for the rest. Buying alone often gets better prices than in a big group. Shops have been struggling — negotiate respectfully; there’s no harm in asking.</p>
+
+        <PH>Olive Oil to Consecrate</PH>
+        <p><b>Garden of Gethsemane Gift Shop</b> — bottles ₪35–180 ($12–60). Many buy here for the location’s significance; consecrate at home. Bring shekels (cards uncertain). <b>Beware</b> the old-coin sellers around here — great stories, questionable coins.</p>
+
+        <PH>Jewelry — Ben Yehuda</PH>
+        <p><b>Rami’s Ring Shop</b> — Umbrella Street (Yoel Moshe Salomon), Nahalat Shiva. Handcrafted sterling silver rings, necklaces, bracelets, ₪150–500 ($50–165). Ask about one-of-a-kind pieces kept in back.</p>
+
+        <PH>Oils &amp; Fragrances — Bethany</PH>
+        <p><b>Stall near Lazarus’ Tomb</b> (cash only; she may not be there). Frankincense, myrrh, spikenard, rose of Sharon oils ₪35–90; resin “tears” ₪20–70; mustard seeds ₪10–25. A small frankincense-and-myrrh set with resins and mustard seeds makes a meaningful gift.</p>
+
+        <PH>Site Gift Shops</PH>
+        <p><b>Magdala</b> — known for the “Woman Touching the Hem” artwork, rolled for travel (prints ₪200–400); jewelry, oils, keychains. Takes cards.</p>
+        <p><b>Qumran Visitor Center</b> — replica scrolls and coins, biblical archaeology books, Dead Sea skincare, magnets ₪10–25.</p>
+
+        <PH>Treats Along the Way (pay cash)</PH>
+        <p><b>Magnum bars</b> ₪10–13 at supermarkets, up to ₪22 in tourist spots. <b>Bottled sodas</b> ₪6–15 — cheapest at the supermarket down the street from the JC; stock your room before heading in for the day. <b>Elite milk chocolate with popping candy</b> ₪6–10 — pack a bunch in your carry-on for kids and grandkids; it’s a hit.</p>
+
+        <PH>Dining — Old City</PH>
+        <p><b>Best falafel</b>: the stand just inside Damascus Gate, down the steps before the street splits — crispy outside, never dry, outstanding sauce. ~$12–15 with a drink.</p>
+        <p><b>Basti</b> (open Shabbat) — Via Dolorosa. Shawarma, kebabs, pizza; great people-watching. Don’t miss the frozen mint limeade. ₪30–75.</p>
+        <p><b>Abu Kamel (Ramzi)</b> (open Shabbat) — 30 Shuk Avtimus, around the corner from Holy Sepulchre. Family-run since 1935; hummus with warm pine nuts that locals rank among Jerusalem’s best. ₪25–60. Pro tip: have Omar point the way — or record him telling the restaurant what to make for you.</p>
+        <p><b>Al Baghdadi</b> (open Shabbat) — 19–21 Antonia St. Iraqi kebabs ₪45–70.</p>
+        <p><b>Zalatimo Sweets</b> — Khan al-Zeit St. Mutabak: flaky goat-cheese pastry with powdered sugar, ₪20–30.</p>
+        <p><b>Jaffar Sweets</b> — Khan al-Zeit St. Kanafeh (warm stretchy cheese, crispy phyllo, sweet syrup, pistachios) ₪18–30; baklava ₪8–20.</p>
+
+        <PH>Dining — Damascus Gate &amp; East Jerusalem</PH>
+        <p><b>King of Shawarma</b> — right outside Damascus Gate. Excellent chicken shawarma, fresh pita all day. Sandwich ₪25–40. Crowded and gritty, but the food earns it.</p>
+        <p><b>Al Shu’ala Grill</b> — 8 Salah ad-Din St. Among the city’s best shawarma; fantastic fries. ₪25–65.</p>
+        <p><b>Rosemary Café</b> (open Shabbat) — 5 Ibn Battuta St, near Jimmy’s Bazaar. Burgers, pizza, pasta, great shakes — familiar food when you need a break, and perfect after the Garden Tomb. Entrées ₪45–80.</p>
+
+        <PH>Dining — Jaffa Gate &amp; Mamilla</PH>
+        <p><b>Shawarma café across from David’s Citadel</b> (closed Shabbat; look for “Falafel Kabab Shawarma Café”) — our favorite: meat-and-hummus plates with warm pita, excellent wraps.</p>
+        <p><b>Golda Gelato</b> — Mamilla Mall. Israel’s famous gelato chain; try pistachio, salted caramel, Cookieman. Scoop ₪19–22. Go after sunset when Mamilla comes alive, ask for samples, and stroll toward Jaffa Gate.</p>
+
+        <PH>Dining — Near the Jerusalem Center</PH>
+        <p><b>City View</b> (open Shabbat, opens 12pm) — Rehov Binyamin Mazar, 5-minute walk from the JC. Our favorite Shabbat choice: mixed grill, shawarma, pizza, panoramic Old City views. Ask for the terrace. Entrées ₪50–120.</p>
+
+        <PH>Machane Yehuda Market (The Shuk)</PH>
+        <p>Jerusalem’s premier food market — plan on hours. <b>Azura</b> (4 Ha-Eshkol St): signature azura over mashed potatoes, sofrito, oxtail stew, ₪65–110. <b>Jachnun Bar</b> (30 HaEgoz St): malawach (flaky Yemenite flatbread) and slow-baked jachnun with grated tomato, egg, and zhug, ₪35–55. <b>Aricha Sabich</b> (83 Agripas St): Israel’s famous fried-eggplant sabich sandwich, ₪30–45. <b>Marzipan Bakery</b> (44 Agripas St): warm chocolate rogelach, ₪8–15. <b>Boureka stand</b> (Agripas &amp; HaEgoz corner): flaky cheese or potato bourekas, ₪15–30. <b>Khachapuri</b> (5 Ha-Shikma St): Georgian cheese-boat bread with egg and butter, ₪40–70. <b>Halva Kingdom</b> (inside the market): sample sesame, pistachio, chocolate halva — priced by weight, ₪20–80; great to take home.</p>
+        <p style={{fontSize:13,color:C.inkSoft}}>Suggested half-mile food-tour route: Aricha Sabich → Marzipan → Azura → bourekas → Khachapuri → Halva Kingdom.</p>
+      </PrepSection>
+
       <PrepSection title="What to Bring (and Not)">
         <PH>Essentials</PH>
         <p>Passport + copy of ETA-IL and itinerary · sunscreen · flashlight or headlamp (Hezekiah's Tunnel is pitch black) · modest swimsuit · church clothing (nothing fancy; sandals fine) · field trip manual (mailed to you) · insulated water bottle · comfortable broken-in shoes with good traction · $400/person cash for program cost · <b>wired headphones with a round 3.5mm plug</b> for the receiver · 2 AA batteries for the receiver · earplugs (dawn prayer call) · adapters (types C & H) · fanny pack or neck wallet · charging block and cords · personal medication · toiletries (not provided in student rooms).</p>
@@ -858,7 +929,7 @@ function SitePage({sid,isJer,site,date,tripName,tripSub,itinerary,getSite,visit,
   const col=KIND_COLOR[site.kind];
   const about=isJer?(info?.blurb||""):(customSite?.about||site.blurb||"");
   const chatCtx={
-    facts:isJer?TRIP_FACTS:"",
+    facts:isJer?getChatFacts():"",
     trip:tripName, dates:tripSub, day:date||"", site:site.name,
     about,
     talmage:(info&&info.talmageText)?`${info.talmageRef||""}: ${info.talmageText}`:"",
