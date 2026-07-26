@@ -12,7 +12,7 @@ const C = {
   line: "#ddd2bf", brass: "#b0894a", brassDk: "#8f6e37", olive: "#6b7350",
   teal: "#2c5f61", clay: "#a9612f",
 };
-const APP_VERSION = "1.8.0";
+const APP_VERSION = "1.8.1";
 const F_DISP = "'Cinzel', 'Trajan Pro', Georgia, serif";
 const F_SERIF = "'Frank Ruhl Libre', 'Frank Ruehl', Georgia, serif";
 function Fonts(){return(<style>{`@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@400;500;700&display=swap');`}</style>);}
@@ -351,7 +351,17 @@ export default function App(){
   const openImp=(id)=>{setActiveImp(id);setView("impromptu");window.scrollTo(0,0);};
 
   if(!tripId) return (<div style={{background:C.stone,color:C.ink,minHeight:"100vh",fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif"}}>
-    <Fonts/><Landing trips={trips} onOpen={openTrip} onCreate={async(name,sub)=>{const id="t_"+uid();await saveRegistry([...trips,{id,name,sub}]);await idbSet("trip:"+id,emptyTripState());openTrip(id);}} onDelete={async(id)=>{await saveRegistry(trips.filter((t)=>t.id!==id));await idbSet("trip:"+id,undefined);}}/>
+    <Fonts/><Landing trips={trips} onOpen={openTrip} onCreate={async(name,sub)=>{const id="t_"+uid();await saveRegistry([...trips,{id,name,sub}]);await idbSet("trip:"+id,emptyTripState());openTrip(id);}} onImport={async(data)=>{
+      const id="t_"+uid();const cs={};const days=[];
+      (data.days||[]).forEach((d)=>{
+        const sids=(d.stops||[]).map((st)=>{const sid="c_"+uid();cs[sid]={name:String(st.name||"Stop"),kind:["mount","ruins","church","water","walk"].includes(st.kind)?st.kind:"walk",blurb:String(st.blurb||""),custom:true,about:String(st.about||""),refs:[]};return sid;});
+        days.push({id:uid(),date:String(d.date||"Day"),sids});
+      });
+      const st={...emptyTripState(),customSites:cs};
+      if(days.length) st.itinerary=days;
+      await saveRegistry([...trips,{id,name:String(data.name||"Imported trip"),sub:String(data.sub||"")}]);
+      await idbSet("trip:"+id,st);openTrip(id);
+    }} onDelete={async(id)=>{await saveRegistry(trips.filter((t)=>t.id!==id));await idbSet("trip:"+id,undefined);}}/>
   </div>);
 
   if(!hydrated||!trip) return (<div style={{background:C.stone,minHeight:"100vh"}}/>);
@@ -379,8 +389,17 @@ export default function App(){
   );
 }
 
-function Landing({trips,onOpen,onCreate,onDelete}){
+function Landing({trips,onOpen,onCreate,onImport,onDelete}){
   const [adding,setAdding]=useState(false);
+  const importInput=useRef(null);
+  const handleImportFile=async(e)=>{
+    const f=e.target.files[0];e.target.value="";if(!f)return;
+    try{
+      const data=JSON.parse(await f.text());
+      if(!data||typeof data!=="object"||!data.name||!Array.isArray(data.days)) throw new Error("bad");
+      await onImport(data);
+    }catch(err){window.alert("That file doesn't look like a valid trip file (.json with a name and days).");}
+  };
   const [name,setName]=useState(""); const [sub,setSub]=useState("");
   return (
     <div className="max-w-3xl mx-auto px-4 pb-16 pt-6">
@@ -411,7 +430,11 @@ function Landing({trips,onOpen,onCreate,onDelete}){
           <p style={{fontSize:11.5,color:C.inkSoft}}>You'll add days and stops from Edit Itinerary inside the trip. A map image can be added there too.</p>
         </div>
       ):(
-        <button onClick={()=>setAdding(true)} className="mt-4 w-full py-3 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2" style={{border:`1.5px dashed ${C.brass}`,color:C.brassDk,background:"transparent"}}><Plus size={16}/> New trip</button>
+        <div className="mt-4 flex flex-col gap-2">
+          <button onClick={()=>setAdding(true)} className="w-full py-3 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2" style={{border:`1.5px dashed ${C.brass}`,color:C.brassDk,background:"transparent"}}><Plus size={16}/> New trip</button>
+          <button onClick={()=>importInput.current?.click()} className="w-full py-3 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2" style={{border:`1.5px dashed ${C.line}`,color:C.inkSoft,background:"transparent"}}><Plus size={16}/> Import trip from file</button>
+          <input ref={importInput} type="file" accept=".json,application/json" hidden onChange={handleImportFile}/>
+        </div>
       )}
       <div style={{textAlign:"center",marginTop:28,fontSize:11,color:C.inkSoft,opacity:0.7}}>A personal study &amp; journaling assistant · v{APP_VERSION}</div>
     </div>
