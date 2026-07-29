@@ -11,7 +11,7 @@ exports.handler = async (event) => {
   const clip = (s, n) => String(s || "").slice(0, n);
   const trip = clip(ctx.trip, 120), dates = clip(ctx.dates, 60), day = clip(ctx.day, 80);
   const site = clip(ctx.site, 120), about = clip(ctx.about, 900), talmage = clip(ctx.talmage, 1800);
-  const scriptures = clip(ctx.scriptures, 1200), itinerary = clip(ctx.itinerary, 1500), facts = clip(ctx.facts, 24000);
+  const scriptures = clip(ctx.scriptures, 1200), itinerary = clip(ctx.itinerary, 1500), facts = clip(ctx.facts, 30000);
 
   // history: last 12 turns, trimmed
   const msgs = (Array.isArray(payload.messages) ? payload.messages : [])
