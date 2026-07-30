@@ -12,7 +12,7 @@ const C = {
   line: "#ddd2bf", brass: "#b0894a", brassDk: "#8f6e37", olive: "#6b7350",
   teal: "#2c5f61", clay: "#a9612f",
 };
-const APP_VERSION = "1.8.2";
+const APP_VERSION = "1.8.3";
 const F_DISP = "'Cinzel', 'Trajan Pro', Georgia, serif";
 const F_SERIF = "'Frank Ruhl Libre', 'Frank Ruehl', Georgia, serif";
 function Fonts(){return(<style>{`@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@400;500;700&display=swap');`}</style>);}
@@ -137,6 +137,7 @@ const DIRECTORY=[
  {id:"d_p31",name:"David Spencer",phone:"(310) 936-1814",email:"dcs287@yahoo.com",addr:"5028 Steveann Street, Torrance, CA 90503",img:"people/p31.jpg"},
  {id:"d_p32",name:"Jennefer Tasker",phone:"(720) 933-9406",email:"taskermom@gmail.com",addr:"20406 E Sunset Ct., Queen Creek, AZ 85142",img:"people/p32.jpg"},
  {id:"d_p33",name:"Tamara Sheffield",phone:"(801) 718-9254",email:"sheffield.tamara@gmail.com",addr:"1675 Oak Ln, Provo, UT 84604",img:"people/p33.jpg"},
+ {id:"d_p34",name:"Maren Sundahl",phone:"",email:"",addr:"",img:"people/p34.jpg"},
 ];
 const dirInfo=(m)=>DIRECTORY.find((d)=>d.id===m.id)||DIRECTORY.find((d)=>d.name.toLowerCase()===String(m.name||"").trim().toLowerCase());
 function mergeDirectory(s){
@@ -333,12 +334,13 @@ Write your name on the list that you turned in your key
 DO NOT LEAVE WITHOUT GIVING US YOUR RECEIVER AND KEYS`;
 const SHOPDINE_FACTS=`SHOPPING GUIDE: Card machines offering shekels-or-USD: ALWAYS choose shekels (bad USD rate). Omar's / Shaban Amar (Ali Baba Souvenir Shop), Christian Quarter 14: BYU Jerusalem shirts $7-15, skirts $11, oil vials $4, scarves $6, BYU mugs $5, Hebrew CTR rings $65-75, olive wood, Roman glass jewelry, mosaics ($1,250+; his mosaic tile store is across the lane). Fixed honest prices, no bargaining, exchanges money, trusted friend of the JC since the early 80s; ask Omar where to buy anything he doesn't carry, including leather sandals. Garden Tomb gift shop (Conrad Schick St, outside Damascus Gate): books/Bibles, olive wood ₪20-100, jewelry ₪50-300+, nativities ₪100-500+; Mon-Fri 8:30-12 & 2-5:30, Sat 9-1, closed Sun. ANTIQUITIES (genuine pieces $100 into thousands, come with authentication certificates; reputable dealers advise on export and ship affordably; beware cheap fakes in unrecommended shops and the coin sellers near Gethsemane): Yasser Barakat, 146-149 Suq Aftemos, Muristan, by the fountain near the Lutheran bell tower (watercolors, pottery, maps, old photography; favorite of Church leaders and BYU professors); Lions Gate Antiquities, ask for Harrod, just inside Lion's Gate by the 1st station (ancient coins, half-shekels, widow's mites, oil lamps); Zak Shop 24, a couple doors from Omar's (great historical storytelling, good widow's-mite prices; replica oil lamps and olive wood across the lane). OLIVE WOOD: Jimmy's Bazaar, 9 A-Zahra St outside the Old City (trusted by LDS visitors for decades, honest pricing; small items ₪20-200, medium ₪120-500, nativities ₪180-6,000+; takes cards) and the Bethlehem olive wood store the group is guided to (honest Christian owner who explains why lighter Spanish wood costs less; similar range, often cheaper; takes cards). Strategy: price at Jimmy's first, buy favorites in Bethlehem, return to Jimmy's for the rest; solo shoppers get better prices than big groups; shops are struggling so respectful negotiating is fine. OLIVE OIL to consecrate: Gethsemane gift shop on the Mount of Olives, bottles ₪35-180 ($12-60); bring shekels (cards uncertain). JEWELRY: Rami's Ring Shop, Umbrella Street (Yoel Moshe Salomon St), Nahalat Shiva: handcrafted sterling silver rings/necklaces/bracelets ₪150-500; one-of-a-kind pieces kept in back. OILS & FRAGRANCES: small stall near Lazarus' Tomb in Bethany (CASH ONLY, may not be present): frankincense/myrrh/spikenard/rose-of-Sharon oils ₪35-90, resin "tears" ₪20-70, mustard seeds ₪10-25; a small frankincense+myrrh set with resins and seeds is a favorite gift. Magdala gift shop: "Woman Touching the Hem" artwork rolled for travel, prints ₪200-400, jewelry, oils; takes cards. Qumran visitor center: replica scrolls and coins, biblical archaeology books, Dead Sea skincare, magnets ₪10-25. TREATS (pay cash): Magnum bars ₪10-13 at supermarkets (up to ₪22 tourist areas); bottled sodas ₪6-15, cheapest at the supermarket down the street from the JC (stock your room before heading in); Elite milk chocolate with popping candy ₪6-10, widely available, great carry-on gift for kids/grandkids.
 DINING: OLD CITY: best falafel = the stand just inside Damascus Gate, down the steps before the street splits (~$12-15 with drink; crispy, never dry, outstanding sauce). Basti Restaurant, Via Dolorosa (OPEN SHABBAT): shawarma, kebabs, pizza; famous frozen mint limeade; ₪30-75. Abu Kamel / Ramzi, 30 Shuk Avtimus near Holy Sepulchre (OPEN SHABBAT): family-run since 1935, hummus with warm pine nuts among the city's best, ₪25-60; ask Omar to point the way or record him telling the restaurant what to prepare. Al Baghdadi, 19-21 Antonia St (OPEN SHABBAT): Iraqi kebabs ₪45-70, hummus ₪20-30. Zalatimo Sweets, Khan al-Zeit near 9th station: mutabak (flaky goat-cheese pastry, powdered sugar) ₪20-30. Jaffar Sweets, Khan al-Zeit: kanafeh ₪18-30, baklava ₪8-20. DAMASCUS GATE / EAST JERUSALEM: King of Shawarma just outside the gate on Sultan Suleiman St: chicken shawarma sandwich ₪25-40, plate ₪45-65 (gritty area, great food). Al Shu'ala Grill, 8 Salah ad-Din St: top shawarma, fantastic fries, ₪25-65. Rosemary Cafe, 5 Ibn Battuta St near Jimmy's Bazaar (OPEN SHABBAT): burgers, pizza, pasta, great shakes; American-style break; perfect after the Garden Tomb; entrees ₪45-80. JAFFA GATE: shawarma cafe across from David's Citadel, sign reads "Falafel Kabab Shawarma Cafe" (CLOSED Shabbat): group favorite meat-and-hummus plates with warm pita. MAMILLA MALL: Golda Gelato: pistachio, salted caramel, Cookieman; scoop ₪19-22; ask for samples; best in the evening strolling toward Jaffa Gate. NEAR THE JC: City View, Rehov Binyamin Mazar, 5-min walk from the Jerusalem Center (OPEN SHABBAT, opens 12pm — the group's favorite Shabbat spot): mixed grill, shawarma, pizza, panoramic Old City views, ask for the terrace; entrees ₪50-120. MACHANE YEHUDA MARKET: Azura, 4 Ha-Eshkol St (azura minced meat over mashed potatoes, sofrito, oxtail stew, moussaka; ₪65-110); Jachnun Bar, 30 HaEgoz St (malawach flaky Yemenite flatbread, slow-baked jachnun, with grated tomato, egg, zhug; ₪35-55); Aricha Sabich, 83 Agripas St (famous fried-eggplant sabich sandwich with amba; ₪30-45); Marzipan Bakery, 44 Agripas St (warm chocolate rogelach ₪8-15, box ₪45-80); boureka stand at Agripas & HaEgoz corner (cheese/potato/spinach bourekas ₪15-30); Khachapuri, 5 Ha-Shikma St (Georgian cheese-boat bread with egg and butter ₪40-70); Halva Kingdom inside the market (sesame/pistachio/chocolate halva by weight ₪20-80, tahini ₪25-50; sample before buying, great to take home). Recommended half-mile food-tour route: Aricha Sabich → Marzipan → Azura → bourekas → Khachapuri → Halva Kingdom.`;
+const ART_FACTS=`ART SHOPPING GUIDE: High-quality art by professional artists, mostly not inexpensive. Blue & White Art Gallery (artist Udi Merioz, on the Cardo, Jewish Quarter): watercolors, prints from ~$8, "soft painting" applique of Jerusalem scenes and the Lion of Judah; warm host, decades of JC student ties; blueandwhiteart.com. Levantine Gallery (next door to Omar's shop): beautifully curated Jerusalem scenes and Christian-site art by local artists, affordable prints; levantinegallery.com. Omar's Mosaics (Shaban's son, Christian Quarter Rd by the family shop): fine mosaics, paintings, micromosaic jewelry. Shulamit Near (shulamitnear.com): Israeli artist who painted panoramics from the JC terrace; numbered prints on canvas, no bargains; with lead time she will deliver purchases to the Center. Armenian pottery: Sandrouni Armenian Ceramic Center (Armenian Quarter, among the best, expensive) and Balian Armenian Ceramics (Nablus Rd past the Garden Tomb, long Jerusalem history, high quality). Cheap pottery around the Old City chips easily.`;
 let _chatFacts=null;
 function getChatFacts(){
   if(_chatFacts) return _chatFacts;
-  const dir="GROUP DIRECTORY (33 travelers): "+DIRECTORY.map((d)=>`${d.name} — ${d.phone}, ${d.email}, ${d.addr}`).join("; ")+".";
+  const dir="GROUP DIRECTORY ("+DIRECTORY.length+" travelers): "+DIRECTORY.map((d)=>[d.name,d.phone,d.email,d.addr].filter(Boolean).join(", ")).join("; ")+".";
   const idx="TRIP SITES INDEX (ask about any; full details are on each site's page): "+Object.values(SITE_INFO).map((x)=>`${x.name}: ${x.blurb}`).join(" | ");
-  _chatFacts=TRIP_FACTS+"\nOFFICIAL ITINERARY (verbatim, dynamic):\n"+ITIN_DOC+"\n"+SHOPDINE_FACTS+"\n"+dir+"\n"+idx;
+  _chatFacts=TRIP_FACTS+"\nOFFICIAL ITINERARY (verbatim, dynamic):\n"+ITIN_DOC+"\n"+SHOPDINE_FACTS+"\n"+ART_FACTS+"\n"+dir+"\n"+idx;
   return _chatFacts;
 }
 
@@ -959,6 +961,7 @@ function PrepSection({title,children,defaultOpen}){
   );
 }
 function PLink({href,children}){ return <a href={href} target="_blank" rel="noopener noreferrer" style={{color:C.teal,textDecoration:"underline",textUnderlineOffset:2}}>{children}</a>; }
+const AIMG=({n,alt})=><img src={`art/a${n}.jpg`} alt={alt||""} style={{maxWidth:280,width:"100%",borderRadius:10,display:"block",margin:"8px 0"}}/>;
 function PH({children}){ return <div style={{fontSize:11,letterSpacing:1,color:C.brassDk,textTransform:"uppercase",fontWeight:700,margin:"12px 0 4px"}}>{children}</div>; }
 function PrepPage({back}){
   return (
@@ -1067,6 +1070,34 @@ function PrepPage({back}){
         <PH>Machane Yehuda Market (The Shuk)</PH>
         <p>Jerusalem’s premier food market — plan on hours. <b>Azura</b> (4 Ha-Eshkol St): signature azura over mashed potatoes, sofrito, oxtail stew, ₪65–110. <b>Jachnun Bar</b> (30 HaEgoz St): malawach (flaky Yemenite flatbread) and slow-baked jachnun with grated tomato, egg, and zhug, ₪35–55. <b>Aricha Sabich</b> (83 Agripas St): Israel’s famous fried-eggplant sabich sandwich, ₪30–45. <b>Marzipan Bakery</b> (44 Agripas St): warm chocolate rogelach, ₪8–15. <b>Boureka stand</b> (Agripas &amp; HaEgoz corner): flaky cheese or potato bourekas, ₪15–30. <b>Khachapuri</b> (5 Ha-Shikma St): Georgian cheese-boat bread with egg and butter, ₪40–70. <b>Halva Kingdom</b> (inside the market): sample sesame, pistachio, chocolate halva — priced by weight, ₪20–80; great to take home.</p>
         <p style={{fontSize:13,color:C.inkSoft}}>Suggested half-mile food-tour route: Aricha Sabich → Marzipan → Azura → bourekas → Khachapuri → Halva Kingdom.</p>
+      </PrepSection>
+
+      <PrepSection title="Art Shopping Guide">
+        <p>Art is everywhere in Jerusalem — but not all of it is what we’d hang at home. These are high-quality pieces by professional artists, and mostly not inexpensive (Blue &amp; White and the Levantine Gallery both carry affordable prints). The antiquities shops in the main shopping guide carry beautiful art pieces too. And you can always wander and see what you find — if you find a gem, pass it along.</p>
+
+        <PH>Blue &amp; White Art Gallery</PH>
+        <p>Artist <b>Udi Merioz</b>’s famous little shop on the Cardo in the Jewish Quarter — he grew up in the Old City after 1967 and has served Jerusalem Center students for years; go in and he’ll tell you stories about the students he’s made art for. Watercolors, prints, and his signature “soft painting” appliqué of Jerusalem landscapes, stone streets, and the Lion of Judah. Prints from about $8 alongside originals. Preview at blueandwhiteart.com or the gallery’s Instagram.</p>
+        <AIMG n="01" alt="Blue and White Art Gallery"/>
+
+        <PH>Levantine Gallery</PH>
+        <p>Next door to Omar’s shop. The owner isn’t the warmest, but the art he and his wife have curated is genuinely beautiful — particularly the Jerusalem scenes and Christian-site works. Originals by talented local artists, with affordable prints of the same pieces. levantinegallery.com</p>
+        <AIMG n="02" alt="Levantine Gallery"/>
+
+        <PH>Omar’s Mosaics</PH>
+        <p>Sold by Shaban’s son on Christian Quarter Road, right by the family shop. Very fine mosaics — not inexpensive, but a treasured buy — plus some paintings and micromosaic jewelry.</p>
+
+        <PH>Shulamit Near — Israeli Artist</PH>
+        <p>During the pandemic Shulamit came to the Jerusalem Center weekly, sat on the terrace, and painted a panoramic of the view — plus several other JC scenes since. Her work sells as numbered prints on top-quality canvas; some hang in the Center’s guest and faculty apartments, and a large panoramic hangs in the Jerusalem Center office in Provo. No bargains, but gorgeous. If you want one, she’ll bring it to the Center — given enough lead time, since each is specially printed on canvas. shulamitnear.com/prints-gallery</p>
+        <div className="flex flex-wrap gap-2">
+          <AIMG n="03" alt="Shulamit Near print"/><AIMG n="04" alt="Shulamit Near print"/><AIMG n="05" alt="Shulamit Near print"/><AIMG n="06" alt="Shulamit Near print"/><AIMG n="07" alt="Shulamit Near print"/>
+        </div>
+
+        <PH>Armenian Pottery — Armenian Quarter &amp; Nablus Road</PH>
+        <p><b>Sandrouni Armenian Ceramic Center</b> is one of the best — a distinctive style with real quality and remarkable detail in every piece. Expensive.</p>
+        <AIMG n="08" alt="Sandrouni ceramics"/>
+        <p><b>Balian — Armenian Ceramics of Jerusalem</b>, on Nablus Road past the Garden Tomb (walking from Damascus Gate). A long history in the city; not cheap, but very high quality and very pretty. armenianceramics.com</p>
+        <div className="flex flex-wrap gap-2"><AIMG n="09" alt="Balian pottery"/><AIMG n="10" alt="Balian tiles"/></div>
+        <p style={{fontSize:13,color:C.inkSoft}}>Note: these ceramics — like most of this guide — are fine-craftsmanship pieces. Inexpensive pottery is sold throughout the Old City, but it’s not fine work and chips easily, so handle the cheap varieties with care.</p>
       </PrepSection>
 
       <PrepSection title="What to Bring (and Not)">
@@ -1400,10 +1431,10 @@ function Roster({members,setMembers}){
             <button className="mt-0.5" onClick={()=>{if(m.photo)setZoom(m);}}><Avatar member={m} size={44}/></button>
             <div style={{flex:1,minWidth:0}}>
               <div style={{fontSize:15,fontWeight:600,color:C.ink}}>{m.name}</div>
-              {info&&(<div style={{marginTop:1}}>
-                <a href={`tel:${info.phone.replace(/[^+\d]/g,"")}`} style={{fontSize:12.5,color:C.teal,display:"block"}}>{info.phone}</a>
-                <a href={`mailto:${info.email}`} style={{fontSize:12.5,color:C.teal,display:"block",overflowWrap:"anywhere"}}>{info.email}</a>
-                <div style={{fontSize:12,color:C.inkSoft}}>{info.addr}</div>
+              {info&&(info.phone||info.email||info.addr)&&(<div style={{marginTop:1}}>
+                {info.phone&&<a href={`tel:${info.phone.replace(/[^+\d]/g,"")}`} style={{fontSize:12.5,color:C.teal,display:"block"}}>{info.phone}</a>}
+                {info.email&&<a href={`mailto:${info.email}`} style={{fontSize:12.5,color:C.teal,display:"block",overflowWrap:"anywhere"}}>{info.email}</a>}
+                {info.addr&&<div style={{fontSize:12,color:C.inkSoft}}>{info.addr}</div>}
               </div>)}
               <div className="flex items-center gap-2 mt-1.5">
                 <button onClick={()=>photoInputs.current[m.id]?.click()} className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs" style={{border:`1px solid ${C.line}`,color:C.inkSoft}}><UserPlus size={13}/> {m.photo?"Change photo":"Photo"}</button>
