@@ -12,7 +12,7 @@ const C = {
   line: "#ddd2bf", brass: "#b0894a", brassDk: "#8f6e37", olive: "#6b7350",
   teal: "#2c5f61", clay: "#a9612f",
 };
-const APP_VERSION = "1.8.6";
+const APP_VERSION = "1.8.7";
 const F_DISP = "'Cinzel', 'Trajan Pro', Georgia, serif";
 const F_SERIF = "'Frank Ruhl Libre', 'Frank Ruehl', Georgia, serif";
 function Fonts(){return(<style>{`@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@400;500;700&display=swap');`}</style>);}
@@ -115,7 +115,7 @@ const DIRECTORY=[
  {id:"d_p09",name:"Macy Cobb",phone:"(385) 506-8844",email:"macyjcobb@gmail.com",addr:"11392 S. Open Hill Dr., South Jordan, UT 84009",img:"people/p09.jpg"},
  {id:"d_p10",name:"Ben Crouch",phone:"(801) 580-9792",email:"abencrouch@gmail.com",addr:"296 S 100 W, Jerome, ID 83338",img:"people/p10.jpg"},
  {id:"d_p11",name:"Amy Christensen",phone:"(719) 491-5269",email:"amychristensen08@gmail.com",addr:"11417 S Harvest Rain Ave, South Jordan, UT 84009",img:"people/p11.jpg"},
- {id:"d_p12",name:"Laura Dutson",phone:"(966) 550-1871",email:"laura.sheffield@gmail.com",addr:"P.O. Box 2878",img:"people/p12.jpg"},
+ {id:"d_p12",name:"Laura Dutson",phone:"(801) 921-8648",email:"laura.sheffield@gmail.com",addr:"P.O. Box 363550, North Las Vegas, NV 89036",img:"people/p12.jpg"},
  {id:"d_p13",name:"Karen Fetzer",phone:"(801) 244-7766",email:"karen.fetzer@gmail.com",addr:"47-75 Kamehameha Hwy, Kaneohe, HI 96744",img:"people/p13.jpg"},
  {id:"d_p14",name:"Nikki Hazlett",phone:"(435) 260-8628",email:"moabrivermom@gmail.com",addr:"485 Riversands Rd, Moab, UT 84532",img:"people/p14.jpg"},
  {id:"d_p15",name:"Stephen Hazlett",phone:"(435) 260-8629",email:"info@worldwideriver.com",addr:"485 Riversands Rd, Moab, UT 84532",img:"people/p15.jpg"},
@@ -137,7 +137,7 @@ const DIRECTORY=[
  {id:"d_p31",name:"David Spencer",phone:"(310) 936-1814",email:"dcs287@yahoo.com",addr:"5028 Steveann Street, Torrance, CA 90503",img:"people/p31.jpg"},
  {id:"d_p32",name:"Jennefer Tasker",phone:"(720) 933-9406",email:"taskermom@gmail.com",addr:"20406 E Sunset Ct., Queen Creek, AZ 85142",img:"people/p32.jpg"},
  {id:"d_p33",name:"Tamara Sheffield",phone:"(801) 718-9254",email:"sheffield.tamara@gmail.com",addr:"1675 Oak Ln, Provo, UT 84604",img:"people/p33.jpg"},
- {id:"d_p34",name:"Maren Sundahl",phone:"",email:"",addr:"",img:"people/p34.jpg"},
+ {id:"d_p34",name:"Maren Sundahl",phone:"(801) 592-2629",email:"marenp@hotmail.com",addr:"480 S Second St W, Saint Johns, AZ 85936",img:"people/p34.jpg"},
 ];
 const dirInfo=(m)=>DIRECTORY.find((d)=>d.id===m.id)||DIRECTORY.find((d)=>d.name.toLowerCase()===String(m.name||"").trim().toLowerCase());
 function mergeDirectory(s){
@@ -434,7 +434,8 @@ async function transcribeHandwriting(file){
   if(!out) throw new Error("No text came back — try a clearer, well-lit photo of the page.");
   return out;
 }
-const sortMembers=(m)=>[...m].sort((a,b)=>(a.starred===b.starred?a.name.localeCompare(b.name):a.starred?-1:1));
+const lastName=(n)=>{const p=String(n||"").trim().split(/\s+/);return (p[p.length-1]||"").toLowerCase();};
+const sortMembers=(m)=>[...m].sort((a,b)=>{if(a.starred!==b.starred)return a.starred?-1:1;const la=lastName(a.name),lb=lastName(b.name);return la===lb?a.name.localeCompare(b.name):la.localeCompare(lb);});
 const initials=(name)=>name.split(" ").map((p)=>p[0]).slice(0,2).join("").toUpperCase();
 function stamp(){const d=new Date();const p=(n)=>String(n).padStart(2,"0");return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}`;}
 function visitSig(e){if(!e)return "";const ph=(e.photos||[]).map((p)=>`${p.caption}~${(p.people||[]).join(",")}~${(p.dataUrl||"").length}`).join(";");return `${(e.text||"").length}:${e.text||""}|${ph}`;}
