@@ -12,7 +12,7 @@ const C = {
   line: "#ddd2bf", brass: "#b0894a", brassDk: "#8f6e37", olive: "#6b7350",
   teal: "#2c5f61", clay: "#a9612f",
 };
-const APP_VERSION = "1.8.8";
+const APP_VERSION = "1.8.9";
 const F_DISP = "'Cinzel', 'Trajan Pro', Georgia, serif";
 const F_SERIF = "'Frank Ruhl Libre', 'Frank Ruehl', Georgia, serif";
 function Fonts(){return(<style>{`@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@400;500;700&display=swap');`}</style>);}
@@ -503,7 +503,14 @@ export default function App(){
   const [homeChat,setHomeChat]=useState(false);
   const [tripId,setTripId]=useState(null);                // null = landing
   const [trip,setTrip]=useState(null);                    // active trip state
-  const [view,setView]=useState("home");
+  const [view,_setView]=useState("home");
+  const homeScroll=useRef(0);
+  const setView=(v)=>{
+    if(view==="home"&&v!=="home") homeScroll.current=window.scrollY||0;
+    _setView(v);
+    const raf=(typeof window!=="undefined"&&window.requestAnimationFrame)?window.requestAnimationFrame.bind(window):((f)=>setTimeout(f,16));
+    raf(()=>raf(()=>{ try{window.scrollTo(0,v==="home"?homeScroll.current:0);}catch(e){} }));
+  };
   const [activeSite,setActiveSite]=useState(null);
   const [activeImp,setActiveImp]=useState(null);
   const [showExport,setShowExport]=useState(false);
